@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final counterProvider = StateProvider((ref) => 0);
 
 void main() {
-  runApp(const ProviderScope(child:MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('ja', ''),
+        const Locale('en', ''),
+      ],
       home: HomePage(),
     );
   }
@@ -25,8 +32,9 @@ class MyApp extends StatelessWidget {
 class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print("hello=" + AppLocalizations.of(context)!.hello);
     return Scaffold(
-      appBar: AppBar(title: const Text('Movie Info')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.app_title)),
       body: Center(
         child: Consumer(builder: (context, ref, _) {
           final count = ref.watch(counterProvider);
@@ -43,4 +51,3 @@ class HomePage extends ConsumerWidget {
     );
   }
 }
-
