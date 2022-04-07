@@ -59,9 +59,13 @@ class HomePage extends ConsumerWidget {
     for (int i = 0; i < 20; i++) {
       widgets.add(new Padding(
           padding: new EdgeInsets.all(10.0),
-          child: Text("Hello, world.$i",
-              style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent)),
-      ));
+          child: ListTile(
+              leading: CircleAvatar(child: Icon(Icons.face)),
+              title: Text("Hello, world.$i",
+                  style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent)),
+          )
+        ),
+      );
     }
     return widgets;
   }
