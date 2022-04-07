@@ -38,8 +38,8 @@ class HomePage extends ConsumerWidget {
       body: Center(
         child: Consumer(builder: (context, ref, _) {
           final count = ref.watch(counterProvider);
-          return Text('$count',
-              style: TextStyle(fontSize: 100, color: Colors.lightBlueAccent));
+          //return Text('$count', style: TextStyle(fontSize: 100, color: Colors.lightBlueAccent));
+          return ListView(children: _getListData());
         }),
       ),
       floatingActionButton: FloatingActionButton(
@@ -50,4 +50,20 @@ class HomePage extends ConsumerWidget {
       ),
     );
   }
+
+  /**
+   * Widgeのリストを返す.
+   */
+  List<Widget> _getListData() {
+    List<Widget> widgets = [];
+    for (int i = 0; i < 20; i++) {
+      widgets.add(new Padding(
+          padding: new EdgeInsets.all(10.0),
+          child: Text("Hello, world.$i",
+              style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent)),
+      ));
+    }
+    return widgets;
+  }
 }
+
