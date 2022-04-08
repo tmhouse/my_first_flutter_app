@@ -39,6 +39,9 @@ dependencies:
 
   intl:
 
+  http:
+  http_retry:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

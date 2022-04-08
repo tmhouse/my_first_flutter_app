@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:my_first_flutter_app/movieInfo.dart';
 
 final counterProvider = StateProvider((ref) => 0);
 
@@ -69,6 +70,13 @@ class TopPage extends ConsumerWidget {
             onTap: () {
               print("onTap:$i");
               Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(i)));
+
+              // とりあえず映画情報を取得するテスト
+              Future<String> res = TheMovieDB().getMoviePopular();
+              res.then((value) {
+                print("future.then res=" + value);
+              });
+
             },
           )
         ),
