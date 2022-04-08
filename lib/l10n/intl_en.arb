@@ -1,4 +1,5 @@
 {
   "hello" : "hello world",
-  "app_title" : "Movie Info App"
+  "top_page_title" : "Movie Info App",
+  "detail_page_title" : "Detail"
 }

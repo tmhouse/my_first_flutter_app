@@ -61,10 +61,20 @@ class S {
   }
 
   /// `Movie Info App`
-  String get app_title {
+  String get top_page_title {
     return Intl.message(
       'Movie Info App',
-      name: 'app_title',
+      name: 'top_page_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Detail`
+  String get detail_page_title {
+    return Intl.message(
+      'Detail',
+      name: 'detail_page_title',
       desc: '',
       args: [],
     );

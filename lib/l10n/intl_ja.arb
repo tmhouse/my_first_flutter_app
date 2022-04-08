@@ -1,4 +1,5 @@
 {
   "hello" : "こんにちはworld",
-  "app_title" : "映画情報アプリ"
+  "top_page_title" : "映画じょーほー",
+  "detail_page_title" : "くわしい映画じょーほー"
 }

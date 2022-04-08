@@ -37,7 +37,7 @@ class TopPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     print("hello=" + AppLocalizations.of(context)!.hello);
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.app_title)),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
       body: Center(
         child: Consumer(builder: (context, ref, _) {
           final count = ref.watch(counterProvider);
@@ -88,7 +88,7 @@ class DetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.app_title)),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.detail_page_title)),
       body:Text("Detail Page:detail=$_detailNo"),
     );
   }
