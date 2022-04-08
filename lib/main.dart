@@ -24,12 +24,15 @@ class MyApp extends StatelessWidget {
         const Locale('ja', ''),
         const Locale('en', ''),
       ],
-      home: HomePage(),
+      home: TopPage(),
     );
   }
 }
 
-class HomePage extends ConsumerWidget {
+/**
+ * トップページ画面.
+ */
+class TopPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print("hello=" + AppLocalizations.of(context)!.hello);
@@ -39,7 +42,7 @@ class HomePage extends ConsumerWidget {
         child: Consumer(builder: (context, ref, _) {
           final count = ref.watch(counterProvider);
           //return Text('$count', style: TextStyle(fontSize: 100, color: Colors.lightBlueAccent));
-          return ListView(children: _getListData());
+          return ListView(children: _getListData(context));
         }),
       ),
       floatingActionButton: FloatingActionButton(
@@ -54,15 +57,19 @@ class HomePage extends ConsumerWidget {
   /**
    * Widgeのリストを返す.
    */
-  List<Widget> _getListData() {
+  List<Widget> _getListData(BuildContext ctx) {
     List<Widget> widgets = [];
     for (int i = 0; i < 20; i++) {
       widgets.add(new Padding(
           padding: new EdgeInsets.all(10.0),
           child: ListTile(
-              leading: CircleAvatar(child: Icon(Icons.face)),
-              title: Text("Hello, world.$i",
-                  style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent)),
+            leading: CircleAvatar(child: Icon(Icons.face)),
+            title: Text("Hello, world.$i",
+                  style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent), ),
+            onTap: () {
+              print("onTap:$i");
+              Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(i)));
+            },
           )
         ),
       );
@@ -71,3 +78,18 @@ class HomePage extends ConsumerWidget {
   }
 }
 
+/**
+ * 詳細ページ.
+ */
+class DetailPage extends ConsumerWidget {
+  int _detailNo;
+  DetailPage(this._detailNo);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.app_title)),
+      body:Text("Detail Page:detail=$_detailNo"),
+    );
+  }
+}
