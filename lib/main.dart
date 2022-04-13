@@ -6,10 +6,16 @@ import 'package:my_first_flutter_app/movieInfo.dart';
 
 final counterProvider = StateProvider((ref) => 0);
 
+/************************************************************
+ * main.
+ ***********************************************************/
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
+/************************************************************
+ * MyApp.
+ ***********************************************************/
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -30,19 +36,35 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/**
+/************************************************************
  * トップページ画面.
- */
+ * 1. TopPageコンストラクタで映画情報の取得を開始して非同期結果待ちにする.
+ * 2. 結果が届いたら内部データとcountProviderを更新して画面の再描画を促す.
+ ***********************************************************/
 class TopPage extends ConsumerWidget {
+  TopPage() {
+    print("consumer widget constructor called");
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print("hello=" + AppLocalizations.of(context)!.hello);
+
+    // 映画情報の取得を開始する
+    TheMovieDB().getMoviePopular().then((String json) {
+      print("映画情報取得完了. res=" + json);
+
+      ref.read(counterProvider.state).update((state) => state + 1);
+    });
+
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
       body: Center(
         child: Consumer(builder: (context, ref, _) {
           final count = ref.watch(counterProvider);
-          //return Text('$count', style: TextStyle(fontSize: 100, color: Colors.lightBlueAccent));
+          if( count == 0 ) {
+            return ListView();
+          }
           return ListView(children: _getListData(context));
         }),
       ),
@@ -70,13 +92,6 @@ class TopPage extends ConsumerWidget {
             onTap: () {
               print("onTap:$i");
               Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(i)));
-
-              // とりあえず映画情報を取得するテスト
-              Future<String> res = TheMovieDB().getMoviePopular();
-              res.then((value) {
-                print("future.then res=" + value);
-              });
-
             },
           )
         ),
@@ -86,9 +101,9 @@ class TopPage extends ConsumerWidget {
   }
 }
 
-/**
+/************************************************************
  * 詳細ページ.
- */
+ ************************************************************/
 class DetailPage extends ConsumerWidget {
   int _detailNo;
   DetailPage(this._detailNo);
