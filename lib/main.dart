@@ -52,7 +52,7 @@ class TopPage extends ConsumerWidget {
     ref.read(counterProvider.state).update((state) => state + 1);
   }
 
-  late List<MovieInfo> _movieInfoList;
+  List<MovieInfo>? _movieInfoList = null;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -72,9 +72,6 @@ class TopPage extends ConsumerWidget {
       body: Center(
         child: Consumer(builder: (context, ref, _) {
           final count = ref.watch(counterProvider);
-          if( count == 0 ) {
-            return ListView();
-          }
           return ListView(children: _getListData(context));
         }),
       ),
@@ -92,12 +89,14 @@ class TopPage extends ConsumerWidget {
    */
   List<Widget> _getListData(BuildContext ctx) {
     List<Widget> widgets = [];
-    for (int i = 0; i < 20; i++) {
+    int cnt = _movieInfoList?.length ?? 0;
+    for (int i = 0; i < cnt; i++) {
+      MovieInfo mi = _movieInfoList![i];
       widgets.add(new Padding(
           padding: new EdgeInsets.all(10.0),
           child: ListTile(
             leading: CircleAvatar(child: Icon(Icons.face)),
-            title: Text("Hello, world.$i",
+            title: Text(mi.title,
                   style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent), ),
             onTap: () {
               print("onTap:$i");
