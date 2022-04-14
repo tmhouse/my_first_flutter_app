@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,16 +48,30 @@ class TopPage extends ConsumerWidget {
     print("consumer widget constructor called");
   }
 
+  void update(WidgetRef ref) {
+    ref.read(counterProvider.state).update((state) => state + 1);
+  }
+
+  // 映画情報の取得を開始する
+  void startGettingMovieData(WidgetRef ref) {
+    TheMovieDB().getMoviePopular().then((String json) {
+      Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
+      var result_list = full_map["results"] as List<dynamic>;
+      for( Map<String, dynamic> ent in result_list ) {
+        var info = MovieInfo.fromJson(ent);
+        print("info=" + info.title);
+      }
+
+      update(ref);
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print("hello=" + AppLocalizations.of(context)!.hello);
 
     // 映画情報の取得を開始する
-    TheMovieDB().getMoviePopular().then((String json) {
-      print("映画情報取得完了. res=" + json);
-
-      ref.read(counterProvider.state).update((state) => state + 1);
-    });
+    startGettingMovieData(ref);
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
@@ -70,7 +86,7 @@ class TopPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ref.read(counterProvider.state).update((state) => state + 1);
+          update(ref);
         },
         child: const Icon(Icons.add),
       ),
