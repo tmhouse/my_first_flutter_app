@@ -59,14 +59,14 @@ class MovieInfo {
   // map to User
   MovieInfo.fromJson(Map<String, dynamic> json)
       : this.adult = json['adult'],
-        this.backdrop_path = json['backdrop_path'],
+        this.backdrop_path = _posterImageBaseUrl + json['backdrop_path'],
         this.genre_ids = json['genre_ids'],
         this.id = json['id'],
         this.original_language = json['original_language'],
         this.original_title = json['original_title'],
         this.overview = json['overview'],
         this.popularity = json['popularity'],
-        this.poster_path = json['poster_path'],
+        this.poster_path = _posterImageBaseUrl + json['poster_path'],
         this.release_date = json['release_date'],
         this.title = json['title'],
         this.video = json['video'],
@@ -80,6 +80,8 @@ class MovieInfo {
     //'hobby': hobby,
     throw UnimplementedError("implement please");
   }
+
+  static const _posterImageBaseUrl = "https://image.tmdb.org/t/p/w200";
 }
 
 /**

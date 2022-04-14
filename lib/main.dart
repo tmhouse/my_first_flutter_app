@@ -92,12 +92,20 @@ class TopPage extends ConsumerWidget {
     int cnt = _movieInfoList?.length ?? 0;
     for (int i = 0; i < cnt; i++) {
       MovieInfo mi = _movieInfoList![i];
+
+      // overviewがないやつは飛ばす
+      if( mi.overview.isEmpty ) {
+        continue;
+      }
+
       widgets.add(new Padding(
           padding: new EdgeInsets.all(10.0),
           child: ListTile(
-            leading: CircleAvatar(child: Icon(Icons.face)),
-            title: Text(mi.title,
-                  style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent), ),
+            leading: Image.network(mi.backdrop_path),
+            title: Text(mi.title + "\n" + mi.original_title,
+                  style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent, fontStyle: FontStyle.italic), ),
+            subtitle: Text(mi.overview, maxLines: 3),
+            isThreeLine: true,
             onTap: () {
               print("onTap:$i");
               Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(i)));
