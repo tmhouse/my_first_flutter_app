@@ -52,26 +52,20 @@ class TopPage extends ConsumerWidget {
     ref.read(counterProvider.state).update((state) => state + 1);
   }
 
-  // 映画情報の取得を開始する
-  void startGettingMovieData(WidgetRef ref) {
-    TheMovieDB().getMoviePopular().then((String json) {
-      Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
-      var result_list = full_map["results"] as List<dynamic>;
-      for( Map<String, dynamic> ent in result_list ) {
-        var info = MovieInfo.fromJson(ent);
-        print("info=" + info.title);
-      }
-
-      update(ref);
-    });
-  }
+  late List<MovieInfo> _movieInfoList;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print("hello=" + AppLocalizations.of(context)!.hello);
 
     // 映画情報の取得を開始する
-    startGettingMovieData(ref);
+    TheMovieDB().startGettingPopularMovieList().then(
+            (List<MovieInfo> value) {
+              // 取得できた
+              _movieInfoList = value;
+              update(ref);
+            }
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),

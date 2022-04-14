@@ -102,11 +102,27 @@ class TheMovieDB {
   }
   TheMovieDB._internal();
 
-  Future<String> getMoviePopular() async {
+  /**
+   * popularな映画のリストを取得開始する.
+   */
+  Future<List<MovieInfo>> startGettingPopularMovieList() async {
     Uri uri = Uri.parse(_get_movie_popular);
     final response = await http.get(uri);
     //print("http status=$response.statusCode,  response.body=" + response.body);
-    return response.body;
-  }
+    String json = response.body;
 
+    Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
+    var result_list = full_map["results"] as List<dynamic>;
+    var infoList = <MovieInfo>[];
+    for( Map<String, dynamic> ent in result_list ) {
+      var info = MovieInfo.fromJson(ent);
+      print("info=" + info.title);
+      infoList.add(info);
+    }
+
+    result_list.forEach((element) {
+      infoList.add(MovieInfo.fromJson(element));
+    });
+    return infoList;
+  }
 }
