@@ -130,6 +130,11 @@ class DetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     log("info.id=" + _info.id);
+    TheMovieDB().startGettingMovieDetail(_info.id).then((detail) {
+        log("then detail result:" + detail.title.toString());
+      }
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.detail_page_title)),
       body:Text("Detail Page:detail=" + _info.title),

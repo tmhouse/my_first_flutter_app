@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:json_annotation/json_annotation.dart';
 import 'mysecret.dart';
 
+part "movieInfo.g.dart";
 
 /**
  * ひとつの映画情報データホルダ.
@@ -42,6 +44,7 @@ class MovieInfo {
   final num vote_average; // 8.2,
   final num vote_count; // 11355
 
+  /****
   MovieInfo(this.adult,
       this.backdrop_path,
       this.genre_ids,
@@ -56,6 +59,7 @@ class MovieInfo {
       this.video,
       this.vote_average,
       this.vote_count);
+      ****/
 
   // map to User
   MovieInfo.fromJson(Map<String, dynamic> json)
@@ -76,14 +80,55 @@ class MovieInfo {
   ;
 
   // map to json
+  /***
   Map<String, dynamic> toJson() {
     //'name': name,
     //'hobby': hobby,
     throw UnimplementedError("implement please");
   }
+      ***/
 
   static const _posterImageBaseUrl = "https://image.tmdb.org/t/p/w200";
 }
+
+/**
+ * ひとつの映画の詳細情報のデータホルダ.
+ */
+@JsonSerializable()
+class MovieDetail {
+  bool? adult;
+  String? backdrop_path;
+  String? belongs_to_collection;
+  num? budget;
+  List<dynamic>? genres;
+  String? homepage;
+  num? id;
+  String? imdb_id;
+  String? original_language;
+  String? original_title;
+  String? overview;
+  num? popularity;
+  String? poster_path;
+  List<dynamic>? production_companies;
+  List<dynamic>? production_countries;
+  String? release_date;
+  num? revenue;
+  num? runtime;
+  List<dynamic>? spoken_languages;
+  String? status;
+  String? tagline;
+  String? title;
+  bool? video;
+  num? vote_average;
+  num? vote_count;
+
+  MovieDetail();
+
+  factory MovieDetail.fromJson(Map<String, dynamic> json) => _$MovieDetailFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MovieDetailToJson(this);
+}
+
 
 /**
  * 映画情報を取得するクラス.
@@ -93,7 +138,14 @@ class TheMovieDB {
   static const String _server = "https://api.themoviedb.org/3/";
   static const String _apiKey = "api_key=$tmdb_api_key";
   static const String _lang = "language=ja-JP";
-  static const String _get_movie_popular = _server + "movie/popular?" + _apiKey + "&" + _lang;
+
+  String _getMoviePopularPath() {
+    const String p = _server + "movie/popular?" + _apiKey + "&" + _lang;
+    return p;
+  }
+  String _getMovieDetailPath(String id) {
+    return _server + "movie/" + id + "?" + _apiKey + "&" + _lang;
+  }
 
   // singleton implements
   static TheMovieDB? _instance;
@@ -109,7 +161,7 @@ class TheMovieDB {
    * popularな映画のリストを取得開始する.
    */
   Future<List<MovieInfo>> startGettingPopularMovieList() async {
-    Uri uri = Uri.parse(_get_movie_popular);
+    Uri uri = Uri.parse(_getMoviePopularPath());
     final response = await http.get(uri);
     //log("http status=$response.statusCode,  response.body=" + response.body);
     String json = response.body;
@@ -127,5 +179,16 @@ class TheMovieDB {
       infoList.add(MovieInfo.fromJson(element));
     });
     return infoList;
+  }
+
+  /**
+   * ひとつの映画の詳細情報の取得を開始する.
+   */
+  Future<MovieDetail> startGettingMovieDetail(String id) async {
+    Uri uri = Uri.parse(_getMovieDetailPath(id));
+    final response = await http.get(uri);
+    Map<String, dynamic> full_map = jsonDecode(response.body).cast<String, dynamic>();
+    log("detail full=" + full_map.toString());
+    return MovieDetail.fromJson(full_map);
   }
 }
