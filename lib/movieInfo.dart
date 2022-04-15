@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'mysecret.dart';
@@ -29,7 +30,7 @@ class MovieInfo {
   final bool adult;
   final String backdrop_path;
   final List<dynamic> genre_ids; // [28, 12, 878],
-  final num id; // 634649,
+  final String id; // 634649,
   final String original_language; // en,
   final String original_title; // Spider-Man: No Way Home,
   final String overview; //  倒した敵の暴露により、...
@@ -61,7 +62,7 @@ class MovieInfo {
       : this.adult = json['adult'],
         this.backdrop_path = _posterImageBaseUrl + json['backdrop_path'],
         this.genre_ids = json['genre_ids'],
-        this.id = json['id'],
+        this.id = json['id'].toString(),
         this.original_language = json['original_language'],
         this.original_title = json['original_title'],
         this.overview = json['overview'],
@@ -110,7 +111,7 @@ class TheMovieDB {
   Future<List<MovieInfo>> startGettingPopularMovieList() async {
     Uri uri = Uri.parse(_get_movie_popular);
     final response = await http.get(uri);
-    //print("http status=$response.statusCode,  response.body=" + response.body);
+    //log("http status=$response.statusCode,  response.body=" + response.body);
     String json = response.body;
 
     Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
@@ -118,7 +119,7 @@ class TheMovieDB {
     var infoList = <MovieInfo>[];
     for( Map<String, dynamic> ent in result_list ) {
       var info = MovieInfo.fromJson(ent);
-      print("info=" + info.title);
+      log("info=" + info.title);
       infoList.add(info);
     }
 

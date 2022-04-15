@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
  ***********************************************************/
 class TopPage extends ConsumerWidget {
   TopPage() {
-    print("consumer widget constructor called");
+    log("consumer widget constructor called");
   }
 
   void update(WidgetRef ref) {
@@ -56,7 +57,7 @@ class TopPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print("hello=" + AppLocalizations.of(context)!.hello);
+    log("hello=" + AppLocalizations.of(context)!.hello);
 
     // 映画情報の取得を開始する
     TheMovieDB().startGettingPopularMovieList().then(
@@ -107,8 +108,8 @@ class TopPage extends ConsumerWidget {
             subtitle: Text(mi.overview, maxLines: 3),
             isThreeLine: true,
             onTap: () {
-              print("onTap:$i");
-              Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(i)));
+              log("onTap:$i");
+              Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(mi)));
             },
           )
         ),
@@ -122,14 +123,16 @@ class TopPage extends ConsumerWidget {
  * 詳細ページ.
  ************************************************************/
 class DetailPage extends ConsumerWidget {
-  int _detailNo;
-  DetailPage(this._detailNo);
+  MovieInfo _info;
+
+  DetailPage(this._info);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    log("info.id=" + _info.id);
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.detail_page_title)),
-      body:Text("Detail Page:detail=$_detailNo"),
+      body:Text("Detail Page:detail=" + _info.title),
     );
   }
 }
