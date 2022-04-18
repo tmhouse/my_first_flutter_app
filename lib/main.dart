@@ -102,7 +102,7 @@ class TopPage extends ConsumerWidget {
       widgets.add(new Padding(
           padding: new EdgeInsets.all(10.0),
           child: ListTile(
-            leading: Image.network(mi.backdrop_path),
+            leading: Image.network(mi.getPoserPath()),
             title: Text(mi.title + "\n" + mi.original_title,
                   style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent, fontStyle: FontStyle.italic), ),
             subtitle: Text(mi.overview, maxLines: 3),
@@ -129,9 +129,9 @@ class DetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log("info.id=" + _info.id);
-    TheMovieDB().startGettingMovieDetail(_info.id).then((detail) {
-        log("then detail result:" + detail.title.toString());
+    log("info.id=" + _info.id.toString());
+    TheMovieDB().startGettingMovieDetail(_info.id.toString()).then((detail) {
+        log("then detail result:" + detail.title);
       }
     );
 

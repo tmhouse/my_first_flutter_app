@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 import 'mysecret.dart';
@@ -11,7 +12,18 @@ part "movieInfo.g.dart";
 /**
  * ひとつの映画情報データホルダ.
  */
+@JsonSerializable()
 class MovieInfo {
+  static const imageBaseUrl = "https://image.tmdb.org/t/p/w200";
+
+  String _mergePath(String str) {
+    return imageBaseUrl + "/" + str;
+  }
+
+  String getPoserPath() {
+    return _mergePath(this.poster_path);
+  }
+
   // json sampel = {
   //  adult: false,
   //  backdrop_path: /iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg,
@@ -28,67 +40,26 @@ class MovieInfo {
   //  vote_average: 8.2,
   //  vote_count: 11355
   // }
+  bool adult = false;
+  String backdrop_path = "";
+  List<num>? genre_ids; // [28, 12, 878],
+  num id = 0; // 634649,
+  String original_language = ""; // en,
+  String original_title = ""; // Spider-Man: No Way Home,
+  String overview = ""; //  倒した敵の暴露により、...
+  num popularity = 0; // 6120.418,
+  String poster_path = ""; // /cFIph6JuKo53YaASQZhFC7qPJF7.jpg,
+  String release_date = ""; // 2021-12-15,
+  String title = ""; // スパイダーマン：ノー・ウェイ・ホーム,
+  bool video = false; // false,
+  num vote_average = 0; // 8.2,
+  num vote_count = 0; // 11355
 
-  final bool adult;
-  final String backdrop_path;
-  final List<dynamic> genre_ids; // [28, 12, 878],
-  final String id; // 634649,
-  final String original_language; // en,
-  final String original_title; // Spider-Man: No Way Home,
-  final String overview; //  倒した敵の暴露により、...
-  final num popularity; // 6120.418,
-  final String poster_path; // /cFIph6JuKo53YaASQZhFC7qPJF7.jpg,
-  final String release_date; // 2021-12-15,
-  final String title; // スパイダーマン：ノー・ウェイ・ホーム,
-  final bool video; // false,
-  final num vote_average; // 8.2,
-  final num vote_count; // 11355
+  MovieInfo();
 
-  /****
-  MovieInfo(this.adult,
-      this.backdrop_path,
-      this.genre_ids,
-      this.id,
-      this.original_language,
-      this.original_title,
-      this.overview,
-      this.popularity,
-      this.poster_path,
-      this.release_date,
-      this.title,
-      this.video,
-      this.vote_average,
-      this.vote_count);
-      ****/
+  factory MovieInfo.fromJson(Map<String, dynamic> json) => _$MovieInfoFromJson(json);
 
-  // map to User
-  MovieInfo.fromJson(Map<String, dynamic> json)
-      : this.adult = json['adult'],
-        this.backdrop_path = _posterImageBaseUrl + json['backdrop_path'],
-        this.genre_ids = json['genre_ids'],
-        this.id = json['id'].toString(),
-        this.original_language = json['original_language'],
-        this.original_title = json['original_title'],
-        this.overview = json['overview'],
-        this.popularity = json['popularity'],
-        this.poster_path = _posterImageBaseUrl + json['poster_path'],
-        this.release_date = json['release_date'],
-        this.title = json['title'],
-        this.video = json['video'],
-        this.vote_average = json['vote_average'],
-        this.vote_count = json['vote_count']
-  ;
-
-  // map to json
-  /***
-  Map<String, dynamic> toJson() {
-    //'name': name,
-    //'hobby': hobby,
-    throw UnimplementedError("implement please");
-  }
-      ***/
-
-  static const _posterImageBaseUrl = "https://image.tmdb.org/t/p/w200";
+  Map<String, dynamic> toJson() => _$MovieInfoToJson(this);
 }
 
 /**
@@ -96,31 +67,31 @@ class MovieInfo {
  */
 @JsonSerializable()
 class MovieDetail {
-  bool? adult;
-  String? backdrop_path;
+  bool adult = false;
+  String backdrop_path = "";
   Map<String, dynamic>? belongs_to_collection;
-  num? budget;
+  num budget = 0;
   List<Map<String, dynamic>>? genres;
-  String? homepage;
-  num? id;
-  String? imdb_id;
-  String? original_language;
-  String? original_title;
-  String? overview;
-  num? popularity;
-  String? poster_path;
+  String homepage = "";
+  num id = 0;
+  String imdb_id = "";
+  String original_language = "";
+  String original_title = "";
+  String overview = "";
+  num popularity = 0;
+  String poster_path = "";
   List<Map<String, dynamic>>? production_companies;
   List<Map<String, dynamic>>? production_countries;
-  String? release_date;
-  num? revenue;
-  num? runtime;
+  String release_date = "";
+  num revenue = 0;
+  num runtime = 0;
   List<Map<String, dynamic>>? spoken_languages;
-  String? status;
-  String? tagline;
-  String? title;
-  bool? video;
-  num? vote_average;
-  num? vote_count;
+  String status = "";
+  String tagline = "";
+  String title = "";
+  bool video = false;
+  num vote_average = 0;
+  num vote_count = 0;
 
   MovieDetail();
 
