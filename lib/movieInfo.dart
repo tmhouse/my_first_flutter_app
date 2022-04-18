@@ -98,9 +98,9 @@ class MovieInfo {
 class MovieDetail {
   bool? adult;
   String? backdrop_path;
-  String? belongs_to_collection;
+  Map<String, dynamic>? belongs_to_collection;
   num? budget;
-  List<dynamic>? genres;
+  List<Map<String, dynamic>>? genres;
   String? homepage;
   num? id;
   String? imdb_id;
@@ -109,12 +109,12 @@ class MovieDetail {
   String? overview;
   num? popularity;
   String? poster_path;
-  List<dynamic>? production_companies;
-  List<dynamic>? production_countries;
+  List<Map<String, dynamic>>? production_companies;
+  List<Map<String, dynamic>>? production_countries;
   String? release_date;
   num? revenue;
   num? runtime;
-  List<dynamic>? spoken_languages;
+  List<Map<String, dynamic>>? spoken_languages;
   String? status;
   String? tagline;
   String? title;

@@ -9,9 +9,12 @@ part of 'movieInfo.dart';
 MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
   ..adult = json['adult'] as bool?
   ..backdrop_path = json['backdrop_path'] as String?
-  ..belongs_to_collection = json['belongs_to_collection'] as String?
+  ..belongs_to_collection =
+      json['belongs_to_collection'] as Map<String, dynamic>?
   ..budget = json['budget'] as num?
-  ..genres = json['genres'] as List<dynamic>?
+  ..genres = (json['genres'] as List<dynamic>?)
+      ?.map((e) => e as Map<String, dynamic>)
+      .toList()
   ..homepage = json['homepage'] as String?
   ..id = json['id'] as num?
   ..imdb_id = json['imdb_id'] as String?
@@ -20,12 +23,18 @@ MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
   ..overview = json['overview'] as String?
   ..popularity = json['popularity'] as num?
   ..poster_path = json['poster_path'] as String?
-  ..production_companies = json['production_companies'] as List<dynamic>?
-  ..production_countries = json['production_countries'] as List<dynamic>?
+  ..production_companies = (json['production_companies'] as List<dynamic>?)
+      ?.map((e) => e as Map<String, dynamic>)
+      .toList()
+  ..production_countries = (json['production_countries'] as List<dynamic>?)
+      ?.map((e) => e as Map<String, dynamic>)
+      .toList()
   ..release_date = json['release_date'] as String?
   ..revenue = json['revenue'] as num?
   ..runtime = json['runtime'] as num?
-  ..spoken_languages = json['spoken_languages'] as List<dynamic>?
+  ..spoken_languages = (json['spoken_languages'] as List<dynamic>?)
+      ?.map((e) => e as Map<String, dynamic>)
+      .toList()
   ..status = json['status'] as String?
   ..tagline = json['tagline'] as String?
   ..title = json['title'] as String?
