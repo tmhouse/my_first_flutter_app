@@ -12,6 +12,11 @@ final movieInfoProvider = StateProvider<List<MovieInfo>>((ref) {
   return <MovieInfo>[];
 });
 
+// 映画の詳細情報をRiverPodで管理する
+final movieDetailProvider = StateProvider<MovieDetail>((ref) {
+  return MovieDetail();
+});
+
 /************************************************************
  * main.
  ***********************************************************/
@@ -95,14 +100,14 @@ class TopPage extends ConsumerWidget {
       widgets.add(new Padding(
           padding: new EdgeInsets.all(10.0),
           child: ListTile(
-            leading: Image.network(mi.getPoserPath()),
+            leading: Image.network(mi.getPosterPath()),
             title: Text(mi.title + "\n" + mi.original_title,
                   style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent, fontStyle: FontStyle.italic), ),
             subtitle: Text(mi.overview, maxLines: 3),
             isThreeLine: true,
             onTap: () {
               log("onTap:$i");
-              Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(mi)));
+              Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
             },
           )
         ),
@@ -116,31 +121,44 @@ class TopPage extends ConsumerWidget {
  * 詳細ページ.
  ************************************************************/
 class DetailPage extends ConsumerWidget {
-  MovieInfo _info;
+  String _id;
 
-  DetailPage(this._info);
+  DetailPage(this._id);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log("info.id=" + _info.id);
-    TheMovieDB().startGettingMovieDetail(_info.id).then((detail) {
+    TheMovieDB().startGettingMovieDetail(_id).then((detail) {
         log("then detail result:" + detail.title);
-      }
-    );
+        log("backdrop path=" + detail.getBackdropPath());
+        ref.read(movieDetailProvider.state).update((oldOne) => detail);
+    } );
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.detail_page_title)),
       body:SingleChildScrollView(
-        child: Column(
-        children: [
-          Text("Detail Page:detail=" + _info.title,
-              textScaleFactor:5.0,),
-          Text("Detail Page:detail=" + _info.title,
-            textScaleFactor:3.0,),
-          Text("Detail Page:detail=" + _info.title),
-        ],
+          child: Consumer(builder: (context, ref, _) {
+            final MovieDetail detail = ref.watch(movieDetailProvider);
+            return Column(children: _getWidgets(detail));
+          }
       ))
-
     );
+  }
+
+  List<Widget> _getWidgets(MovieDetail detail) {
+    if( detail.id.length == 0 ) {
+      return <Widget>[];
+    }
+
+    var wlist = <Widget>[
+      Image.network(detail.getPosterPath()),
+      Text(detail.title, textScaleFactor:2.0,),
+      Text(detail.original_title, textScaleFactor:1.5,),
+      //Text("status:" + detail.status, textScaleFactor: 1.5,),
+      Image.network(detail.getBackdropPath()),
+      Text(detail.vote_count.toString() + "いいね!", textScaleFactor: 1.5,),
+      Text("公開日:" + detail.release_date, textScaleFactor: 1.5,),
+      Text(detail.overview, textScaleFactor: 1.2,),
+    ];
+    return wlist;
   }
 }

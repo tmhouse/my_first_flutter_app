@@ -14,7 +14,7 @@ abstract class MovieDataHolder {
   static String convertToString(dynamic val) => val.toString();
 
   static String mergePath(String str) {
-    return imageBaseUrl + "/" + str;
+    return imageBaseUrl + str;
   }
 }
 
@@ -24,8 +24,13 @@ abstract class MovieDataHolder {
 @JsonSerializable()
 class MovieInfo extends MovieDataHolder {
 
-  String getPoserPath() {
+  String getPosterPath() {
+    assert(this.poster_path.length != 0);
     return MovieDataHolder.mergePath(this.poster_path);
+  }
+  String getBackdropPath() {
+    assert(this.backdrop_path.length != 0);
+    return MovieDataHolder.mergePath(this.backdrop_path);
   }
 
   // json sampel = {
@@ -72,6 +77,13 @@ class MovieInfo extends MovieDataHolder {
  */
 @JsonSerializable()
 class MovieDetail extends MovieDataHolder {
+  String getPosterPath() {
+    return MovieDataHolder.mergePath(this.poster_path);
+  }
+  String getBackdropPath() {
+    return MovieDataHolder.mergePath(this.backdrop_path);
+  }
+
   bool adult = false;
   String backdrop_path = "";
   Map<String, dynamic>? belongs_to_collection;
