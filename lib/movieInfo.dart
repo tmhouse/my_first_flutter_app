@@ -16,13 +16,6 @@ abstract class MovieDataHolder {
   static String mergePath(String str) {
     return imageBaseUrl + str;
   }
-}
-
-/**
- * ひとつの映画情報データホルダ.
- */
-@JsonSerializable()
-class MovieInfo extends MovieDataHolder {
 
   String getPosterPath() {
     assert(this.poster_path.length != 0);
@@ -33,6 +26,16 @@ class MovieInfo extends MovieDataHolder {
     return MovieDataHolder.mergePath(this.backdrop_path);
   }
 
+  String poster_path = "";
+  String backdrop_path = "";
+
+}
+
+/**
+ * ひとつの映画情報データホルダ.
+ */
+@JsonSerializable()
+class MovieInfo extends MovieDataHolder {
   // json sampel = {
   //  adult: false,
   //  backdrop_path: /iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg,
@@ -50,7 +53,6 @@ class MovieInfo extends MovieDataHolder {
   //  vote_count: 11355
   // }
   bool adult = false;
-  String backdrop_path = "";
   List<num>? genre_ids; // [28, 12, 878],
   @JsonKey(fromJson:MovieDataHolder.convertToString)
   String id = ""; // 634649,
@@ -58,7 +60,6 @@ class MovieInfo extends MovieDataHolder {
   String original_title = ""; // Spider-Man: No Way Home,
   String overview = ""; //  倒した敵の暴露により、...
   num popularity = 0; // 6120.418,
-  String poster_path = ""; // /cFIph6JuKo53YaASQZhFC7qPJF7.jpg,
   String release_date = ""; // 2021-12-15,
   String title = ""; // スパイダーマン：ノー・ウェイ・ホーム,
   bool video = false; // false,
@@ -77,15 +78,7 @@ class MovieInfo extends MovieDataHolder {
  */
 @JsonSerializable()
 class MovieDetail extends MovieDataHolder {
-  String getPosterPath() {
-    return MovieDataHolder.mergePath(this.poster_path);
-  }
-  String getBackdropPath() {
-    return MovieDataHolder.mergePath(this.backdrop_path);
-  }
-
   bool adult = false;
-  String backdrop_path = "";
   Map<String, dynamic>? belongs_to_collection;
   num budget = 0;
   List<Map<String, dynamic>>? genres;
@@ -97,7 +90,6 @@ class MovieDetail extends MovieDataHolder {
   String original_title = "";
   String overview = "";
   num popularity = 0;
-  String poster_path = "";
   List<Map<String, dynamic>>? production_companies;
   List<Map<String, dynamic>>? production_countries;
   String release_date = "";

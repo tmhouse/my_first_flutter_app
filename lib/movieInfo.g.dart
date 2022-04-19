@@ -7,8 +7,9 @@ part of 'movieInfo.dart';
 // **************************************************************************
 
 MovieInfo _$MovieInfoFromJson(Map<String, dynamic> json) => MovieInfo()
-  ..adult = json['adult'] as bool
+  ..poster_path = json['poster_path'] as String
   ..backdrop_path = json['backdrop_path'] as String
+  ..adult = json['adult'] as bool
   ..genre_ids =
       (json['genre_ids'] as List<dynamic>?)?.map((e) => e as num).toList()
   ..id = MovieDataHolder.convertToString(json['id'])
@@ -16,7 +17,6 @@ MovieInfo _$MovieInfoFromJson(Map<String, dynamic> json) => MovieInfo()
   ..original_title = json['original_title'] as String
   ..overview = json['overview'] as String
   ..popularity = json['popularity'] as num
-  ..poster_path = json['poster_path'] as String
   ..release_date = json['release_date'] as String
   ..title = json['title'] as String
   ..video = json['video'] as bool
@@ -24,15 +24,15 @@ MovieInfo _$MovieInfoFromJson(Map<String, dynamic> json) => MovieInfo()
   ..vote_count = json['vote_count'] as num;
 
 Map<String, dynamic> _$MovieInfoToJson(MovieInfo instance) => <String, dynamic>{
-      'adult': instance.adult,
+      'poster_path': instance.poster_path,
       'backdrop_path': instance.backdrop_path,
+      'adult': instance.adult,
       'genre_ids': instance.genre_ids,
       'id': instance.id,
       'original_language': instance.original_language,
       'original_title': instance.original_title,
       'overview': instance.overview,
       'popularity': instance.popularity,
-      'poster_path': instance.poster_path,
       'release_date': instance.release_date,
       'title': instance.title,
       'video': instance.video,
@@ -41,8 +41,9 @@ Map<String, dynamic> _$MovieInfoToJson(MovieInfo instance) => <String, dynamic>{
     };
 
 MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
-  ..adult = json['adult'] as bool
+  ..poster_path = json['poster_path'] as String
   ..backdrop_path = json['backdrop_path'] as String
+  ..adult = json['adult'] as bool
   ..belongs_to_collection =
       json['belongs_to_collection'] as Map<String, dynamic>?
   ..budget = json['budget'] as num
@@ -56,7 +57,6 @@ MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
   ..original_title = json['original_title'] as String
   ..overview = json['overview'] as String
   ..popularity = json['popularity'] as num
-  ..poster_path = json['poster_path'] as String
   ..production_companies = (json['production_companies'] as List<dynamic>?)
       ?.map((e) => e as Map<String, dynamic>)
       .toList()
@@ -78,8 +78,9 @@ MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
 
 Map<String, dynamic> _$MovieDetailToJson(MovieDetail instance) =>
     <String, dynamic>{
-      'adult': instance.adult,
+      'poster_path': instance.poster_path,
       'backdrop_path': instance.backdrop_path,
+      'adult': instance.adult,
       'belongs_to_collection': instance.belongs_to_collection,
       'budget': instance.budget,
       'genres': instance.genres,
@@ -90,7 +91,6 @@ Map<String, dynamic> _$MovieDetailToJson(MovieDetail instance) =>
       'original_title': instance.original_title,
       'overview': instance.overview,
       'popularity': instance.popularity,
-      'poster_path': instance.poster_path,
       'production_companies': instance.production_companies,
       'production_countries': instance.production_countries,
       'release_date': instance.release_date,
