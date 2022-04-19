@@ -7,7 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:my_first_flutter_app/movieInfo.dart';
 
-final counterProvider = StateProvider((ref) => 0);
+// 映画情報のリストデータをRiverPodで管理する
+final movieInfoProvider = StateProvider<List<MovieInfo>>((ref) {
+  return <MovieInfo>[];
+});
 
 /************************************************************
  * main.
@@ -49,22 +52,15 @@ class TopPage extends ConsumerWidget {
     log("consumer widget constructor called");
   }
 
-  void update(WidgetRef ref) {
-    ref.read(counterProvider.state).update((state) => state + 1);
-  }
-
-  List<MovieInfo>? _movieInfoList = null;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     log("hello=" + AppLocalizations.of(context)!.hello);
 
     // 映画情報の取得を開始する
     TheMovieDB().startGettingPopularMovieList().then(
-            (List<MovieInfo> value) {
+            (List<MovieInfo> newOne) {
               // 取得できた
-              _movieInfoList = value;
-              update(ref);
+              ref.read(movieInfoProvider.state).update((oldOne) => newOne);
             }
     );
 
@@ -72,15 +68,12 @@ class TopPage extends ConsumerWidget {
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
       body: Center(
         child: Consumer(builder: (context, ref, _) {
-          final count = ref.watch(counterProvider);
-          return ListView(children: _getListData(context));
+          // 映画情報のリストをwatchする。
+          // 画面が表示されると、ここは2回呼ばれる。
+          // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
+          final List<MovieInfo> infoList = ref.watch(movieInfoProvider);
+          return ListView(children: _getListData(context, infoList));
         }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          update(ref);
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -88,11 +81,11 @@ class TopPage extends ConsumerWidget {
   /**
    * Widgeのリストを返す.
    */
-  List<Widget> _getListData(BuildContext ctx) {
+  List<Widget> _getListData(BuildContext ctx, List<MovieInfo> infoList) {
     List<Widget> widgets = [];
-    int cnt = _movieInfoList?.length ?? 0;
+    int cnt = infoList.length;
     for (int i = 0; i < cnt; i++) {
-      MovieInfo mi = _movieInfoList![i];
+      MovieInfo mi = infoList[i];
 
       // overviewがないやつは飛ばす
       if( mi.overview.isEmpty ) {
