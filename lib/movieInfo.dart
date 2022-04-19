@@ -142,13 +142,9 @@ class TheMovieDB {
     var infoList = <MovieInfo>[];
     for( Map<String, dynamic> ent in result_list ) {
       var info = MovieInfo.fromJson(ent);
-      log("info=" + info.title);
+      //log("info=" + info.title);
       infoList.add(info);
     }
-
-    result_list.forEach((element) {
-      infoList.add(MovieInfo.fromJson(element));
-    });
     return infoList;
   }
 
