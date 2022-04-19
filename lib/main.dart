@@ -129,8 +129,8 @@ class DetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log("info.id=" + _info.id.toString());
-    TheMovieDB().startGettingMovieDetail(_info.id.toString()).then((detail) {
+    log("info.id=" + _info.id);
+    TheMovieDB().startGettingMovieDetail(_info.id).then((detail) {
         log("then detail result:" + detail.title);
       }
     );

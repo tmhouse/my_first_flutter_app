@@ -2,26 +2,30 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 import 'mysecret.dart';
 
 part "movieInfo.g.dart";
 
+abstract class MovieDataHolder {
+  static const imageBaseUrl = "https://image.tmdb.org/t/p/w200";
+
+  static String convertToString(dynamic val) => val.toString();
+
+  static String mergePath(String str) {
+    return imageBaseUrl + "/" + str;
+  }
+}
+
 /**
  * ひとつの映画情報データホルダ.
  */
 @JsonSerializable()
-class MovieInfo {
-  static const imageBaseUrl = "https://image.tmdb.org/t/p/w200";
-
-  String _mergePath(String str) {
-    return imageBaseUrl + "/" + str;
-  }
+class MovieInfo extends MovieDataHolder {
 
   String getPoserPath() {
-    return _mergePath(this.poster_path);
+    return MovieDataHolder.mergePath(this.poster_path);
   }
 
   // json sampel = {
@@ -43,7 +47,8 @@ class MovieInfo {
   bool adult = false;
   String backdrop_path = "";
   List<num>? genre_ids; // [28, 12, 878],
-  num id = 0; // 634649,
+  @JsonKey(fromJson:MovieDataHolder.convertToString)
+  String id = ""; // 634649,
   String original_language = ""; // en,
   String original_title = ""; // Spider-Man: No Way Home,
   String overview = ""; //  倒した敵の暴露により、...
@@ -66,14 +71,15 @@ class MovieInfo {
  * ひとつの映画の詳細情報のデータホルダ.
  */
 @JsonSerializable()
-class MovieDetail {
+class MovieDetail extends MovieDataHolder {
   bool adult = false;
   String backdrop_path = "";
   Map<String, dynamic>? belongs_to_collection;
   num budget = 0;
   List<Map<String, dynamic>>? genres;
   String homepage = "";
-  num id = 0;
+  @JsonKey(fromJson:MovieDataHolder.convertToString)
+  String id = "";
   String imdb_id = "";
   String original_language = "";
   String original_title = "";
