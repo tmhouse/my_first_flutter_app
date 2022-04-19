@@ -137,7 +137,17 @@ class DetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.detail_page_title)),
-      body:Text("Detail Page:detail=" + _info.title),
+      body:SingleChildScrollView(
+        child: Column(
+        children: [
+          Text("Detail Page:detail=" + _info.title,
+              textScaleFactor:5.0,),
+          Text("Detail Page:detail=" + _info.title,
+            textScaleFactor:3.0,),
+          Text("Detail Page:detail=" + _info.title),
+        ],
+      ))
+
     );
   }
 }
