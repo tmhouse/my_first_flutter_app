@@ -6,6 +6,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:my_first_flutter_app/movieInfo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'TextInputDialog.dart';
 
 // 映画情報のリストデータをRiverPodで管理する
 final movieInfoProvider = StateProvider<List<MovieInfo>>((ref) {
@@ -29,8 +32,10 @@ void main() {
  ***********************************************************/
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       localizationsDelegates: [
         AppLocalizations.delegate,
@@ -47,6 +52,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 /************************************************************
  * トップページ画面.
  * 1. TopPageコンストラクタで映画情報の取得を開始して非同期結果待ちにする.
@@ -57,17 +63,24 @@ class TopPage extends ConsumerWidget {
     log("consumer widget constructor called");
   }
 
+  // 映画情報の取得を開始し、取得できたら画面更新を行う
+  void updateMovieInfos(WidgetRef ref, String apiKey) {
+    TheMovieDB.setApiKey(apiKey);
+    TheMovieDB().startGettingPopularMovieList().then((List<MovieInfo> newOne) {
+      // 取得できた
+      ref.read(movieInfoProvider.state).update((oldOne) => newOne);
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log("hello=" + AppLocalizations.of(context)!.hello);
-
-    // 映画情報の取得を開始する
-    TheMovieDB().startGettingPopularMovieList().then(
-            (List<MovieInfo> newOne) {
-              // 取得できた
-              ref.read(movieInfoProvider.state).update((oldOne) => newOne);
-            }
-    );
+    // preferenceからapi_keyを取得する
+    getPrefrence(_pref_api_key_name).then((apiKey) {
+      log("apiKey=" + apiKey.toString());
+      if( apiKey != null ) {
+        updateMovieInfos(ref, apiKey);
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
@@ -80,8 +93,48 @@ class TopPage extends ConsumerWidget {
           return ListView(children: _getListData(context, infoList));
         }),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showTextInputDialog(context).then((apiKey) {
+            log("dialog returns=" + apiKey.toString());
+            setPreference(_pref_api_key_name, apiKey.toString());
+            updateMovieInfos(ref, apiKey.toString());
+          });
+        },
+      ),
     );
   }
+
+  final String _pref_api_key_name = "apikey";
+
+  Future<dynamic> getPrefrence(String key) async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.get(key);
+  }
+  void setPreference(String key, dynamic value) async {
+    final pref = await SharedPreferences.getInstance();
+    if( value is int ) {
+      pref.setInt(key, value);
+    } else if( value is double ) {
+      pref.setDouble(key, value);
+    } else if( value is String ) {
+      pref.setString(key, value);
+    } else {
+      throw new UnimplementedError("ohhh");
+    }
+  }
+
+
+  Future showTextInputDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      //useRootNavigator: true,
+      builder: (BuildContext context) {
+        return TextInputDialog("input your api key", "api key");
+      },
+    );
+  }
+
 
   /**
    * Widgeのリストを返す.

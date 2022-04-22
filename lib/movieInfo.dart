@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
-import 'mysecret.dart';
 
 part "movieInfo.g.dart";
 
@@ -117,15 +116,22 @@ class MovieDetail extends MovieDataHolder {
  */
 class TheMovieDB {
   static const String _server = "https://api.themoviedb.org/3/";
-  static const String _apiKey = "api_key=$tmdb_api_key";
   static const String _lang = "language=ja-JP";
+  static String _s_tmdb_api_key = "";
+
+  static void setApiKey(String apikey) {
+    _s_tmdb_api_key = apikey;
+  }
+  String _getApiKey() {
+    return "api_key=" + _s_tmdb_api_key;
+  }
 
   String _getMoviePopularPath() {
-    const String p = _server + "movie/popular?" + _apiKey + "&" + _lang;
+    String p = _server + "movie/popular?" + _getApiKey() + "&" + _lang;
     return p;
   }
   String _getMovieDetailPath(String id) {
-    return _server + "movie/" + id + "?" + _apiKey + "&" + _lang;
+    return _server + "movie/" + id + "?" + _getApiKey() + "&" + _lang;
   }
 
   // singleton implements
