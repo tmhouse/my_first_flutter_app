@@ -30,6 +30,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  shared_preferences:
+
   flutter_riverpod:
 
   cupertino_icons:
