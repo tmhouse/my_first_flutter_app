@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
  */
 class TextInputDialog extends ConsumerWidget {
   final textCtrl = TextEditingController();
-  String  _title;
-  String  _hint;
+  String _title;
+  String _hint;
 
   TextInputDialog(this._title, this._hint);
 

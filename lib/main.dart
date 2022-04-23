@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       localizationsDelegates: [
         AppLocalizations.delegate,
@@ -51,7 +50,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 /************************************************************
  * トップページ画面.
@@ -77,7 +75,7 @@ class TopPage extends ConsumerWidget {
     // preferenceからapi_keyを取得する
     getPrefrence(_pref_api_key_name).then((value) {
       log("apiKey=" + value.toString());
-      if( value != null ) {
+      if (value != null) {
         updateMovieInfos(ref, value.toString());
       }
     });
@@ -97,7 +95,7 @@ class TopPage extends ConsumerWidget {
         onPressed: () {
           showTextInputDialog(context).then((value) {
             log("dialog returns=" + value.toString());
-            if( value != null ) {
+            if (value != null) {
               setPreference(_pref_api_key_name, value.toString());
               updateMovieInfos(ref, value.toString());
             }
@@ -113,19 +111,19 @@ class TopPage extends ConsumerWidget {
     final pref = await SharedPreferences.getInstance();
     return pref.get(key);
   }
+
   void setPreference(String key, dynamic value) async {
     final pref = await SharedPreferences.getInstance();
-    if( value is int ) {
+    if (value is int) {
       pref.setInt(key, value);
-    } else if( value is double ) {
+    } else if (value is double) {
       pref.setDouble(key, value);
-    } else if( value is String ) {
+    } else if (value is String) {
       pref.setString(key, value);
     } else {
       throw new UnimplementedError("ohhh");
     }
   }
-
 
   Future showTextInputDialog(BuildContext context) async {
     return showDialog(
@@ -137,7 +135,6 @@ class TopPage extends ConsumerWidget {
     );
   }
 
-
   /**
    * Widgeのリストを返す.
    */
@@ -148,24 +145,30 @@ class TopPage extends ConsumerWidget {
       MovieInfo mi = infoList[i];
 
       // overviewがないやつは飛ばす
-      if( mi.overview.isEmpty ) {
+      if (mi.overview.isEmpty) {
         continue;
       }
 
-      widgets.add(new Padding(
-          padding: new EdgeInsets.all(10.0),
-          child: ListTile(
-            leading: Image.network(mi.getPosterPath()),
-            title: Text(mi.title + "\n" + mi.original_title,
-                  style: TextStyle(fontSize: 20, color: Colors.lightBlueAccent, fontStyle: FontStyle.italic), ),
-            subtitle: Text(mi.overview, maxLines: 3),
-            isThreeLine: true,
-            onTap: () {
-              log("onTap:$i");
-              Navigator.push(ctx, MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
-            },
-          )
-        ),
+      widgets.add(
+        new Padding(
+            padding: new EdgeInsets.all(10.0),
+            child: ListTile(
+              leading: Image.network(mi.getPosterPath()),
+              title: Text(
+                mi.title + "\n" + mi.original_title,
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.lightBlueAccent,
+                    fontStyle: FontStyle.italic),
+              ),
+              subtitle: Text(mi.overview, maxLines: 3),
+              isThreeLine: true,
+              onTap: () {
+                log("onTap:$i");
+                Navigator.push(
+                    ctx, MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
+              },
+            )),
       );
     }
     return widgets;
@@ -183,36 +186,49 @@ class DetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     TheMovieDB().startGettingMovieDetail(_id).then((detail) {
-        log("then detail result:" + detail.title);
-        log("backdrop path=" + detail.getBackdropPath());
-        ref.read(movieDetailProvider.state).update((oldOne) => detail);
-    } );
+      log("then detail result:" + detail.title);
+      log("backdrop path=" + detail.getBackdropPath());
+      ref.read(movieDetailProvider.state).update((oldOne) => detail);
+    });
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.detail_page_title)),
-      body:SingleChildScrollView(
-          child: Consumer(builder: (context, ref, _) {
-            final MovieDetail detail = ref.watch(movieDetailProvider);
-            return Column(children: _getWidgets(detail));
-          }
-      ))
-    );
+        appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.detail_page_title)),
+        body: SingleChildScrollView(child: Consumer(builder: (context, ref, _) {
+          final MovieDetail detail = ref.watch(movieDetailProvider);
+          return Column(children: _getWidgets(detail));
+        })));
   }
 
   List<Widget> _getWidgets(MovieDetail detail) {
-    if( detail.id.length == 0 ) {
+    if (detail.id.length == 0) {
       return <Widget>[];
     }
 
     var wlist = <Widget>[
       Image.network(detail.getPosterPath()),
-      Text(detail.title, textScaleFactor:2.0,),
-      Text(detail.original_title, textScaleFactor:1.5,),
+      Text(
+        detail.title,
+        textScaleFactor: 2.0,
+      ),
+      Text(
+        detail.original_title,
+        textScaleFactor: 1.5,
+      ),
       //Text("status:" + detail.status, textScaleFactor: 1.5,),
       Image.network(detail.getBackdropPath()),
-      Text(detail.vote_count.toString() + "いいね!", textScaleFactor: 1.5,),
-      Text("公開日:" + detail.release_date, textScaleFactor: 1.5,),
-      Text(detail.overview, textScaleFactor: 1.2,),
+      Text(
+        detail.vote_count.toString() + "いいね!",
+        textScaleFactor: 1.5,
+      ),
+      Text(
+        "公開日:" + detail.release_date,
+        textScaleFactor: 1.5,
+      ),
+      Text(
+        detail.overview,
+        textScaleFactor: 1.2,
+      ),
     ];
     return wlist;
   }

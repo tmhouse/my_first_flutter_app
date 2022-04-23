@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:developer';
 
@@ -20,6 +19,7 @@ abstract class MovieDataHolder {
     assert(this.poster_path.length != 0);
     return MovieDataHolder.mergePath(this.poster_path);
   }
+
   String getBackdropPath() {
     assert(this.backdrop_path.length != 0);
     return MovieDataHolder.mergePath(this.backdrop_path);
@@ -27,7 +27,6 @@ abstract class MovieDataHolder {
 
   String poster_path = "";
   String backdrop_path = "";
-
 }
 
 /**
@@ -53,7 +52,7 @@ class MovieInfo extends MovieDataHolder {
   // }
   bool adult = false;
   List<num>? genre_ids; // [28, 12, 878],
-  @JsonKey(fromJson:MovieDataHolder.convertToString)
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String id = ""; // 634649,
   String original_language = ""; // en,
   String original_title = ""; // Spider-Man: No Way Home,
@@ -67,7 +66,8 @@ class MovieInfo extends MovieDataHolder {
 
   MovieInfo();
 
-  factory MovieInfo.fromJson(Map<String, dynamic> json) => _$MovieInfoFromJson(json);
+  factory MovieInfo.fromJson(Map<String, dynamic> json) =>
+      _$MovieInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$MovieInfoToJson(this);
 }
@@ -82,7 +82,7 @@ class MovieDetail extends MovieDataHolder {
   num budget = 0;
   List<Map<String, dynamic>>? genres;
   String homepage = "";
-  @JsonKey(fromJson:MovieDataHolder.convertToString)
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String id = "";
   String imdb_id = "";
   String original_language = "";
@@ -104,11 +104,11 @@ class MovieDetail extends MovieDataHolder {
 
   MovieDetail();
 
-  factory MovieDetail.fromJson(Map<String, dynamic> json) => _$MovieDetailFromJson(json);
+  factory MovieDetail.fromJson(Map<String, dynamic> json) =>
+      _$MovieDetailFromJson(json);
 
   Map<String, dynamic> toJson() => _$MovieDetailToJson(this);
 }
-
 
 /**
  * 映画情報を取得するクラス.
@@ -122,6 +122,7 @@ class TheMovieDB {
   static void setApiKey(String apikey) {
     _s_tmdb_api_key = apikey;
   }
+
   String _getApiKey() {
     return "api_key=" + _s_tmdb_api_key;
   }
@@ -130,18 +131,21 @@ class TheMovieDB {
     String p = _server + "movie/popular?" + _getApiKey() + "&" + _lang;
     return p;
   }
+
   String _getMovieDetailPath(String id) {
     return _server + "movie/" + id + "?" + _getApiKey() + "&" + _lang;
   }
 
   // singleton implements
   static TheMovieDB? _instance;
+
   factory TheMovieDB() {
-    if( _instance == null ) {
+    if (_instance == null) {
       _instance = new TheMovieDB._internal();
     }
     return _instance!;
   }
+
   TheMovieDB._internal();
 
   /**
@@ -156,7 +160,7 @@ class TheMovieDB {
     Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
     var result_list = full_map["results"] as List<dynamic>;
     var infoList = <MovieInfo>[];
-    for( Map<String, dynamic> ent in result_list ) {
+    for (Map<String, dynamic> ent in result_list) {
       var info = MovieInfo.fromJson(ent);
       //log("info=" + info.title);
       infoList.add(info);
@@ -170,7 +174,8 @@ class TheMovieDB {
   Future<MovieDetail> startGettingMovieDetail(String id) async {
     Uri uri = Uri.parse(_getMovieDetailPath(id));
     final response = await http.get(uri);
-    Map<String, dynamic> full_map = jsonDecode(response.body).cast<String, dynamic>();
+    Map<String, dynamic> full_map =
+        jsonDecode(response.body).cast<String, dynamic>();
     log("detail full=" + full_map.toString());
     return MovieDetail.fromJson(full_map);
   }
