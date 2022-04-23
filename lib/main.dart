@@ -51,6 +51,35 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/**
+ * 処理中を示すプログレスバー.
+ */
+class ProgressBarImpl {
+  Future? _future;
+
+  void show(BuildContext context) {
+    close(context);
+    _future = showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        transitionDuration: Duration(milliseconds: 300),
+        barrierColor: Colors.black.withOpacity(0.5),
+        pageBuilder: (BuildContext context, Animation animation,
+            Animation secondaryAnimation) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+    );
+  }
+
+  void close(BuildContext context) {
+    if( _future != null ) {
+      Navigator.of(context).pop();
+      _future = null;
+    }
+  }
+}
 /************************************************************
  * トップページ画面.
  * 1. TopPageコンストラクタで映画情報の取得を開始して非同期結果待ちにする.
@@ -58,18 +87,22 @@ class MyApp extends StatelessWidget {
  ***********************************************************/
 class TopPage extends ConsumerWidget {
   ScrollController  _scrollController = ScrollController();
+  ProgressBarImpl   _progressBarImpl = ProgressBarImpl();
 
   TopPage() {
     log("consumer widget constructor called");
   }
 
   // 映画情報の取得を開始し、取得できたら画面更新を行う
-  void updateMovieInfos(WidgetRef ref) {
+  void updateMovieInfos(BuildContext context, WidgetRef ref) {
+    _progressBarImpl.show(context);
+
     // 一度クリアする
     ref.read(movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
     TheMovieDB().startGettingPopularMovieList().then((List<MovieInfo> newOne) {
       // 取得できた
       ref.read(movieInfoProvider.state).update((oldOne) => newOne);
+      _progressBarImpl.close(context);
     });
   }
 
@@ -79,7 +112,7 @@ class TopPage extends ConsumerWidget {
     _scrollController.addListener(() {
       if( _scrollController.offset == 0 ) {
         log("ooh zero");
-        updateMovieInfos(ref);
+        updateMovieInfos(context, ref);
       }
     });
 
@@ -88,7 +121,7 @@ class TopPage extends ConsumerWidget {
       log("apiKey=" + value.toString());
       if (value != null) {
         TheMovieDB.setApiKey(value.toString());
-        updateMovieInfos(ref);
+        updateMovieInfos(context, ref);
       }
     });
 
@@ -116,7 +149,7 @@ class TopPage extends ConsumerWidget {
                   if (value != null) {
                     setPreference(_pref_api_key_name, value.toString());
                     TheMovieDB.setApiKey(value.toString());
-                    updateMovieInfos(ref);
+                    updateMovieInfos(context, ref);
                   }
                 });
               },
