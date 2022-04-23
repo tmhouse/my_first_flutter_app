@@ -82,6 +82,36 @@ class TopPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Settings'),
+            ),
+            ListTile(
+              title: const Text('Setup API KEY'),
+              onTap: () {
+                showTextInputDialog(context).then((value) {
+                  log("dialog returns=" + value.toString());
+                  if (value != null) {
+                    setPreference(_pref_api_key_name, value.toString());
+                    updateMovieInfos(ref, value.toString());
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+
       body: Center(
         child: Consumer(builder: (context, ref, _) {
           // 映画情報のリストをwatchする。
@@ -90,17 +120,6 @@ class TopPage extends ConsumerWidget {
           final List<MovieInfo> infoList = ref.watch(movieInfoProvider);
           return ListView(children: _getListData(context, infoList));
         }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showTextInputDialog(context).then((value) {
-            log("dialog returns=" + value.toString());
-            if (value != null) {
-              setPreference(_pref_api_key_name, value.toString());
-              updateMovieInfos(ref, value.toString());
-            }
-          });
-        },
       ),
     );
   }
