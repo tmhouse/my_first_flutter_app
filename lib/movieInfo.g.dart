@@ -7,8 +7,8 @@ part of 'movieInfo.dart';
 // **************************************************************************
 
 MovieInfo _$MovieInfoFromJson(Map<String, dynamic> json) => MovieInfo()
-  ..poster_path = json['poster_path'] as String
-  ..backdrop_path = json['backdrop_path'] as String
+  ..poster_path = MovieDataHolder.convertToString(json['poster_path'])
+  ..backdrop_path = MovieDataHolder.convertToString(json['backdrop_path'])
   ..adult = json['adult'] as bool
   ..genre_ids =
       (json['genre_ids'] as List<dynamic>?)?.map((e) => e as num).toList()
@@ -41,8 +41,8 @@ Map<String, dynamic> _$MovieInfoToJson(MovieInfo instance) => <String, dynamic>{
     };
 
 MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
-  ..poster_path = json['poster_path'] as String
-  ..backdrop_path = json['backdrop_path'] as String
+  ..poster_path = MovieDataHolder.convertToString(json['poster_path'])
+  ..backdrop_path = MovieDataHolder.convertToString(json['backdrop_path'])
   ..adult = json['adult'] as bool
   ..belongs_to_collection =
       json['belongs_to_collection'] as Map<String, dynamic>?

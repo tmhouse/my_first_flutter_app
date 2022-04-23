@@ -25,7 +25,9 @@ abstract class MovieDataHolder {
     return MovieDataHolder.mergePath(this.backdrop_path);
   }
 
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String poster_path = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String backdrop_path = "";
 }
 
@@ -127,8 +129,9 @@ class TheMovieDB {
     return "api_key=" + _s_tmdb_api_key;
   }
 
+  // https://developers.themoviedb.org/3/movies/get-popular-movies
   String _getMoviePopularPath() {
-    String p = _server + "movie/popular?" + _getApiKey() + "&" + _lang;
+    String p = _server + "movie/popular?" + _getApiKey() + "&" + _lang + "&page=1";
     return p;
   }
 
