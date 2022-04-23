@@ -75,10 +75,10 @@ class TopPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // preferenceからapi_keyを取得する
-    getPrefrence(_pref_api_key_name).then((apiKey) {
-      log("apiKey=" + apiKey.toString());
-      if( apiKey != null ) {
-        updateMovieInfos(ref, apiKey);
+    getPrefrence(_pref_api_key_name).then((value) {
+      log("apiKey=" + value.toString());
+      if( value != null ) {
+        updateMovieInfos(ref, value.toString());
       }
     });
 
@@ -95,10 +95,12 @@ class TopPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showTextInputDialog(context).then((apiKey) {
-            log("dialog returns=" + apiKey.toString());
-            setPreference(_pref_api_key_name, apiKey.toString());
-            updateMovieInfos(ref, apiKey.toString());
+          showTextInputDialog(context).then((value) {
+            log("dialog returns=" + value.toString());
+            if( value != null ) {
+              setPreference(_pref_api_key_name, value.toString());
+              updateMovieInfos(ref, value.toString());
+            }
           });
         },
       ),
