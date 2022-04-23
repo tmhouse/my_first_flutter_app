@@ -57,13 +57,16 @@ class MyApp extends StatelessWidget {
  * 2. 結果が届いたら内部データとcountProviderを更新して画面の再描画を促す.
  ***********************************************************/
 class TopPage extends ConsumerWidget {
+  ScrollController  _scrollController = ScrollController();
+
   TopPage() {
     log("consumer widget constructor called");
   }
 
   // 映画情報の取得を開始し、取得できたら画面更新を行う
-  void updateMovieInfos(WidgetRef ref, String apiKey) {
-    TheMovieDB.setApiKey(apiKey);
+  void updateMovieInfos(WidgetRef ref) {
+    // 一度クリアする
+    ref.read(movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
     TheMovieDB().startGettingPopularMovieList().then((List<MovieInfo> newOne) {
       // 取得できた
       ref.read(movieInfoProvider.state).update((oldOne) => newOne);
@@ -72,11 +75,20 @@ class TopPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // スクロール上限に達したらリロード
+    _scrollController.addListener(() {
+      if( _scrollController.offset == 0 ) {
+        log("ooh zero");
+        updateMovieInfos(ref);
+      }
+    });
+
     // preferenceからapi_keyを取得する
     getPrefrence(_pref_api_key_name).then((value) {
       log("apiKey=" + value.toString());
       if (value != null) {
-        updateMovieInfos(ref, value.toString());
+        TheMovieDB.setApiKey(value.toString());
+        updateMovieInfos(ref);
       }
     });
 
@@ -103,7 +115,8 @@ class TopPage extends ConsumerWidget {
                   log("dialog returns=" + value.toString());
                   if (value != null) {
                     setPreference(_pref_api_key_name, value.toString());
-                    updateMovieInfos(ref, value.toString());
+                    TheMovieDB.setApiKey(value.toString());
+                    updateMovieInfos(ref);
                   }
                 });
               },
@@ -118,7 +131,10 @@ class TopPage extends ConsumerWidget {
           // 画面が表示されると、ここは2回呼ばれる。
           // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
           final List<MovieInfo> infoList = ref.watch(movieInfoProvider);
-          return ListView(children: _getListData(context, infoList));
+          return ListView(
+              children: _getListData(context, infoList),
+              controller: _scrollController,
+          );
         }),
       ),
     );
