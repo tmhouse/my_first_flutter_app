@@ -1,5 +1,6 @@
-import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' as Math;
+//import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -86,8 +87,8 @@ class ProgressBarImpl {
  * 2. 結果が届いたら内部データとcountProviderを更新して画面の再描画を促す.
  ***********************************************************/
 class TopPage extends ConsumerWidget {
-  ScrollController  _scrollController = ScrollController();
-  ProgressBarImpl   _progressBarImpl = ProgressBarImpl();
+  ScrollController _scrollController = ScrollController();
+  ProgressBarImpl _progressBarImpl = ProgressBarImpl();
 
   TopPage() {
     log("consumer widget constructor called");
@@ -109,7 +110,7 @@ class TopPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // スクロール上限に達したらリロード
-    if( false ) {
+    if (false) {
       _scrollController.addListener(() {
         if (_scrollController.offset == 0) {
           log("ooh zero");
@@ -129,6 +130,7 @@ class TopPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.top_page_title)),
+      // 上部固定のエリア
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
         // through the options in the drawer if there isn't enough vertical
@@ -160,18 +162,28 @@ class TopPage extends ConsumerWidget {
         ),
       ),
 
-      body: Center(
-        child: Consumer(builder: (context, ref, _) {
-          // 映画情報のリストをwatchする。
-          // 画面が表示されると、ここは2回呼ばれる。
-          // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
-          final List<MovieInfo> infoList = ref.watch(movieInfoProvider);
-          return ListView(
-              children: _getListData(context, infoList),
-              controller: _scrollController,
-          );
-        }),
-      ),
+      // 本体
+      body: Consumer(builder: (context, ref, _) {
+        // 映画情報のリストをwatchする。
+        // 画面が表示されると、ここは2回呼ばれる。
+        // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
+        final List<MovieInfo> infoList = ref.watch(movieInfoProvider);
+        return SingleChildScrollView(
+          child: PaginatedDataTable(
+            //header: Text("スクロールするよ"),
+            //rowsPerPage: ,
+            dataRowHeight: 120,
+            source: MyMovieData(infoList),
+            columns: const [
+              DataColumn(label: Text("一覧")),
+            ],
+            columnSpacing: 10,
+            horizontalMargin: 10,
+            //rowsPerPage: 8,
+            showCheckboxColumn: false,
+          ),
+        );
+      },),
     );
   }
 
@@ -204,25 +216,36 @@ class TopPage extends ConsumerWidget {
       },
     );
   }
+}
 
-  /**
-   * Widgeのリストを返す.
-   */
-  List<Widget> _getListData(BuildContext ctx, List<MovieInfo> infoList) {
-    List<Widget> widgets = [];
-    int cnt = infoList.length;
-    for (int i = 0; i < cnt; i++) {
-      MovieInfo mi = infoList[i];
+/**
+ * リスト表示を司る.
+ */
+class MyMovieData extends DataTableSource {
+  List<MovieInfo> _list = [];
 
-      // overviewがないやつは飛ばす
-      if (mi.overview.isEmpty) {
-        continue;
-      }
+  MyMovieData(this._list);
 
-      widgets.add(
-        new Padding(
-            padding: new EdgeInsets.all(10.0),
-            child: ListTile(
+  @override
+  bool get isRowCountApproximate => false;
+  @override
+  int get rowCount => _list.length;
+  @override
+  int get selectedRowCount => 0;
+  @override
+  DataRow getRow(int index) {
+    MovieInfo mi = _list[index];
+    return DataRow(cells: [
+      DataCell(_getRowWidget(mi)),
+    ]);
+  }
+
+  Widget _getRowWidget(MovieInfo mi) {
+    return Padding(
+        padding: new EdgeInsets.all(10.0),
+        child: Builder(
+          builder:(context) =>
+            ListTile(
               leading: Image.network(mi.getPosterPath()),
               title: Text(
                 mi.title + "\n" + mi.original_title,
@@ -230,18 +253,16 @@ class TopPage extends ConsumerWidget {
                     fontSize: 20,
                     color: Colors.lightBlueAccent,
                     fontStyle: FontStyle.italic),
-              ),
+                ),
               subtitle: Text(mi.overview, maxLines: 3),
               isThreeLine: true,
-              onTap: () {
-                log("onTap:$i");
-                Navigator.push(
-                    ctx, MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
-              },
-            )),
-      );
-    }
-    return widgets;
+            onTap: () {
+              log("onTap:");
+              Navigator.push(
+                    context, MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
+            },
+        )
+    ));
   }
 }
 
