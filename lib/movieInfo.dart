@@ -117,7 +117,7 @@ class MovieDetail extends MovieDataHolder {
  * https://www.themoviedb.org/
  */
 class TheMovieDB {
-  static const String _server = "https://api.themoviedb.org/3/";
+  static const String _server = "https://api.themoviedb.org/3";
   static const String _lang = "language=ja-JP";
   static String _s_tmdb_api_key = "";
 
@@ -125,18 +125,15 @@ class TheMovieDB {
     _s_tmdb_api_key = apikey;
   }
 
-  String _getApiKey() {
-    return "api_key=" + _s_tmdb_api_key;
-  }
-
   // https://developers.themoviedb.org/3/movies/get-popular-movies
-  String _getMoviePopularPath() {
-    String p = _server + "movie/popular?" + _getApiKey() + "&" + _lang + "&page=1";
+  String _getMoviePopularPath(int page) {
+    assert(page > 0);
+    String p = "$_server/movie/popular?api_key=$_s_tmdb_api_key&$_lang&page=$page";
     return p;
   }
 
   String _getMovieDetailPath(String id) {
-    return _server + "movie/" + id + "?" + _getApiKey() + "&" + _lang;
+    return "$_server/movie/$id?api_key=$_s_tmdb_api_key&$_lang";
   }
 
   // singleton implements
@@ -155,7 +152,7 @@ class TheMovieDB {
    * popularな映画のリストを取得開始する.
    */
   Future<List<MovieInfo>> startGettingPopularMovieList() async {
-    Uri uri = Uri.parse(_getMoviePopularPath());
+    Uri uri = Uri.parse(_getMoviePopularPath(1));
     final response = await http.get(uri);
     //log("http status=$response.statusCode,  response.body=" + response.body);
     String json = response.body;
