@@ -109,12 +109,14 @@ class TopPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // スクロール上限に達したらリロード
-    _scrollController.addListener(() {
-      if( _scrollController.offset == 0 ) {
-        log("ooh zero");
-        updateMovieInfos(context, ref);
-      }
-    });
+    if( false ) {
+      _scrollController.addListener(() {
+        if (_scrollController.offset == 0) {
+          log("ooh zero");
+          updateMovieInfos(context, ref);
+        }
+      });
+    }
 
     // preferenceからapi_keyを取得する
     getPrefrence(_pref_api_key_name).then((value) {
