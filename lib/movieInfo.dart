@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 
@@ -152,14 +153,22 @@ class TheMovieDB {
    * popularな映画のリストを取得開始する.
    */
   Future<List<MovieInfo>> startGettingPopularMovieList() async {
+    var infoList = <MovieInfo>[];
     Uri uri = Uri.parse(_getMoviePopularPath(1));
     final response = await http.get(uri);
     //log("http status=$response.statusCode,  response.body=" + response.body);
     String json = response.body;
 
     Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
+
+    if( full_map["success"] == false ) {
+      String msg = full_map["status_message"];
+      log("can not get movie list. " + msg);
+      Fluttertoast.showToast(msg: msg, timeInSecForIosWeb: 5);
+      return infoList;
+    }
+
     var result_list = full_map["results"] as List<dynamic>;
-    var infoList = <MovieInfo>[];
     for (Map<String, dynamic> ent in result_list) {
       var info = MovieInfo.fromJson(ent);
       //log("info=" + info.title);
