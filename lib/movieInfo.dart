@@ -154,18 +154,10 @@ class TheMovieDB {
    */
   Future<List<MovieInfo>> startGettingPopularMovieList({int minLength = 50}) async {
     var infoList = <MovieInfo>[];
-    for( int page = 1 ;; page++) {
-      int num = infoList.length;
-      log("current page = $page, current num = $num");
-      if( infoList.length >= minLength ) {
-        break;
-      }
+    for( int page = 1 ; infoList.length < minLength; page++) {
       Uri uri = Uri.parse(_getMoviePopularPath(page));
       final response = await http.get(uri);
-      //log("http status=$response.statusCode,  response.body=" + response.body);
-      String json = response.body;
-
-      Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
+      Map<String, dynamic> full_map = jsonDecode(response.body).cast<String, dynamic>();
 
       if (full_map["success"] == false) {
         String msg = full_map["status_message"];
@@ -180,6 +172,7 @@ class TheMovieDB {
         //log("info=" + info.title);
         infoList.add(info);
       }
+      log("current page = $page, current num = " + infoList.length.toString());
     }
     return infoList;
   }
