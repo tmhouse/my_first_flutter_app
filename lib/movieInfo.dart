@@ -152,27 +152,34 @@ class TheMovieDB {
   /**
    * popularな映画のリストを取得開始する.
    */
-  Future<List<MovieInfo>> startGettingPopularMovieList() async {
+  Future<List<MovieInfo>> startGettingPopularMovieList({int minLength = 50}) async {
     var infoList = <MovieInfo>[];
-    Uri uri = Uri.parse(_getMoviePopularPath(1));
-    final response = await http.get(uri);
-    //log("http status=$response.statusCode,  response.body=" + response.body);
-    String json = response.body;
+    for( int page = 1 ;; page++) {
+      int num = infoList.length;
+      log("current page = $page, current num = $num");
+      if( infoList.length >= minLength ) {
+        break;
+      }
+      Uri uri = Uri.parse(_getMoviePopularPath(page));
+      final response = await http.get(uri);
+      //log("http status=$response.statusCode,  response.body=" + response.body);
+      String json = response.body;
 
-    Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
+      Map<String, dynamic> full_map = jsonDecode(json).cast<String, dynamic>();
 
-    if( full_map["success"] == false ) {
-      String msg = full_map["status_message"];
-      log("can not get movie list. " + msg);
-      Fluttertoast.showToast(msg: msg, timeInSecForIosWeb: 5);
-      return infoList;
-    }
+      if (full_map["success"] == false) {
+        String msg = full_map["status_message"];
+        log("can not get movie list. " + msg);
+        Fluttertoast.showToast(msg: msg, timeInSecForIosWeb: 5);
+        return infoList;
+      }
 
-    var result_list = full_map["results"] as List<dynamic>;
-    for (Map<String, dynamic> ent in result_list) {
-      var info = MovieInfo.fromJson(ent);
-      //log("info=" + info.title);
-      infoList.add(info);
+      var result_list = full_map["results"] as List<dynamic>;
+      for (Map<String, dynamic> ent in result_list) {
+        var info = MovieInfo.fromJson(ent);
+        //log("info=" + info.title);
+        infoList.add(info);
+      }
     }
     return infoList;
   }

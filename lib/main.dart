@@ -100,7 +100,7 @@ class TopPage extends ConsumerWidget {
 
     // 一度クリアする
     ref.read(movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
-    TheMovieDB().startGettingPopularMovieList().then((List<MovieInfo> newOne) {
+    TheMovieDB().startGettingPopularMovieList(minLength:100).then((List<MovieInfo> newOne) {
       // 取得できた
       ref.read(movieInfoProvider.state).update((oldOne) => newOne);
       _progressBarImpl.close(context);
@@ -109,16 +109,6 @@ class TopPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // スクロール上限に達したらリロード
-    if (false) {
-      _scrollController.addListener(() {
-        if (_scrollController.offset == 0) {
-          log("ooh zero");
-          updateMovieInfos(context, ref);
-        }
-      });
-    }
-
     // preferenceからapi_keyを取得する
     getPrefrence(_pref_api_key_name).then((value) {
       log("apiKey=" + value.toString());
