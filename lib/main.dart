@@ -275,10 +275,20 @@ class DetailPage extends ConsumerWidget {
     return Scaffold(
         appBar: AppBar(
             title: Text(AppLocalizations.of(context)!.detail_page_title)),
-        body: SingleChildScrollView(child: Consumer(builder: (context, ref, _) {
-          final MovieDetail detail = ref.watch(movieDetailProvider);
-          return Column(children: _getWidgets(detail));
-        })));
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+            child: Center(
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final MovieDetail detail = ref.watch(movieDetailProvider);
+                  return Column(
+                    children: _getWidgets(detail),
+                  );
+                },
+              )
+            )
+          )
+    );
   }
 
   List<Widget> _getWidgets(MovieDetail detail) {
@@ -288,29 +298,21 @@ class DetailPage extends ConsumerWidget {
 
     var wlist = <Widget>[
       Image.network(detail.getPosterPath()),
-      Text(
-        detail.title,
-        textScaleFactor: 2.0,
-      ),
-      Text(
-        detail.original_title,
-        textScaleFactor: 1.5,
-      ),
+      paddingWrapper(Text(detail.title, textScaleFactor: 2.0)),
+      paddingWrapper(Text(detail.original_title, textScaleFactor: 1.5)),
       //Text("status:" + detail.status, textScaleFactor: 1.5,),
       Image.network(detail.getBackdropPath()),
-      Text(
-        detail.vote_count.toString() + "いいね!",
-        textScaleFactor: 1.5,
-      ),
-      Text(
-        "公開日:" + detail.release_date,
-        textScaleFactor: 1.5,
-      ),
-      Text(
-        detail.overview,
-        textScaleFactor: 1.2,
-      ),
+      Text(detail.vote_count.toString() + "いいね!", textScaleFactor: 1.5),
+      Text("公開日:" + detail.release_date, textScaleFactor: 1.5),
+      paddingWrapper(Text(detail.overview, textScaleFactor: 1.2))
     ];
     return wlist;
+  }
+
+  Widget paddingWrapper(Widget w, {double padding=20}) {
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: w,
+    );
   }
 }
