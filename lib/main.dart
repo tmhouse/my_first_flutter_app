@@ -10,16 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'TextInputDialog.dart';
 import 'TmProgressBar.dart';
 
-// 映画情報のリストデータをRiverPodで管理する
-final movieInfoProvider = StateProvider<List<MovieInfo>>((ref) {
-  return <MovieInfo>[];
-});
-
-// 映画の詳細情報をRiverPodで管理する
-final movieDetailProvider = StateProvider<MovieDetail>((ref) {
-  return MovieDetail();
-});
-
 /************************************************************
  * main.
  ***********************************************************/
@@ -57,6 +47,11 @@ class MyApp extends StatelessWidget {
  * 2. 結果が届いたら内部データとcountProviderを更新して画面の再描画を促す.
  ***********************************************************/
 class TopPage extends ConsumerWidget {
+  // 映画情報のリストデータをRiverPodで管理する
+  final _movieInfoProvider = StateProvider<List<MovieInfo>>((ref) {
+    return <MovieInfo>[];
+  });
+
   //ScrollController _scrollController = ScrollController();
   TmProgressBarImpl _progressBarImpl = TmProgressBarImpl();
 
@@ -69,10 +64,10 @@ class TopPage extends ConsumerWidget {
     _progressBarImpl.show(context);
 
     // 一度クリアする
-    ref.read(movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
+    ref.read(_movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
     TheMovieDB().startGettingPopularMovieList(minLength:100).then((List<MovieInfo> newOne) {
       // 取得できた
-      ref.read(movieInfoProvider.state).update((oldOne) => newOne);
+      ref.read(_movieInfoProvider.state).update((oldOne) => newOne);
       _progressBarImpl.close(context);
     });
   }
@@ -134,7 +129,7 @@ class TopPage extends ConsumerWidget {
         // 映画情報のリストをwatchする。
         // 画面が表示されると、ここは2回呼ばれる。
         // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
-        final List<MovieInfo> infoList = ref.watch(movieInfoProvider);
+        final List<MovieInfo> infoList = ref.watch(_movieInfoProvider);
         return SingleChildScrollView(
           child: PaginatedDataTable(
             //header: Text("スクロールするよ"),
@@ -227,6 +222,11 @@ class MyMovieData extends DataTableSource {
  * 詳細ページ.
  ************************************************************/
 class DetailPage extends ConsumerWidget {
+  // 映画の詳細情報をRiverPodで管理する
+  final _movieDetailProvider = StateProvider<MovieDetail>((ref) {
+    return MovieDetail();
+  });
+
   String _id;
 
   DetailPage(this._id);
@@ -236,7 +236,7 @@ class DetailPage extends ConsumerWidget {
     TheMovieDB().startGettingMovieDetail(_id).then((detail) {
       log("then detail result:" + detail.title);
       log("backdrop path=" + detail.getBackdropPath());
-      ref.read(movieDetailProvider.state).update((oldOne) => detail);
+      ref.read(_movieDetailProvider.state).update((oldOne) => detail);
     });
 
     return Scaffold(
@@ -247,7 +247,8 @@ class DetailPage extends ConsumerWidget {
             child: Center(
               child: Consumer(
                 builder: (context, ref, _) {
-                  final MovieDetail detail = ref.watch(movieDetailProvider);
+                  final MovieDetail detail = ref.watch(_movieDetailProvider);
+                  log("consumer.builder detail is " + detail.title);
                   return Column(
                     children: detail.id.length == 0 ? <Widget>[] :
                       <Widget>[
