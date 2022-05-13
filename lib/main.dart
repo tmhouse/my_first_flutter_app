@@ -1,6 +1,4 @@
 import 'dart:developer';
-import 'dart:math' as Math;
-//import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,6 +8,7 @@ import 'package:my_first_flutter_app/movieInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'TextInputDialog.dart';
+import 'TmProgressBar.dart';
 
 // 映画情報のリストデータをRiverPodで管理する
 final movieInfoProvider = StateProvider<List<MovieInfo>>((ref) {
@@ -52,43 +51,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/**
- * 処理中を示すプログレスバー.
- */
-class ProgressBarImpl {
-  Future? _future;
-
-  void show(BuildContext context) {
-    close(context);
-    _future = showGeneralDialog(
-        context: context,
-        barrierDismissible: false,
-        transitionDuration: Duration(milliseconds: 300),
-        barrierColor: Colors.black.withOpacity(0.5),
-        pageBuilder: (BuildContext context, Animation animation,
-            Animation secondaryAnimation) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-    );
-  }
-
-  void close(BuildContext context) {
-    if( _future != null ) {
-      Navigator.of(context).pop();
-      _future = null;
-    }
-  }
-}
 /************************************************************
  * トップページ画面.
  * 1. TopPageコンストラクタで映画情報の取得を開始して非同期結果待ちにする.
  * 2. 結果が届いたら内部データとcountProviderを更新して画面の再描画を促す.
  ***********************************************************/
 class TopPage extends ConsumerWidget {
-  ScrollController _scrollController = ScrollController();
-  ProgressBarImpl _progressBarImpl = ProgressBarImpl();
+  //ScrollController _scrollController = ScrollController();
+  TmProgressBarImpl _progressBarImpl = TmProgressBarImpl();
 
   TopPage() {
     log("consumer widget constructor called");
@@ -282,31 +252,23 @@ class DetailPage extends ConsumerWidget {
                 builder: (context, ref, _) {
                   final MovieDetail detail = ref.watch(movieDetailProvider);
                   return Column(
-                    children: _getWidgets(detail),
+                    children: detail.id.length == 0 ? <Widget>[] :
+                      <Widget>[
+                        Image.network(detail.getPosterPath()),
+                        paddingWrapper(Text(detail.title, textScaleFactor: 2.0)),
+                        paddingWrapper(Text(detail.original_title, textScaleFactor: 1.5)),
+                        //Text("status:" + detail.status, textScaleFactor: 1.5,),
+                        Image.network(detail.getBackdropPath()),
+                        Text(detail.vote_count.toString() + "いいね!", textScaleFactor: 1.5),
+                        Text("公開日:" + detail.release_date, textScaleFactor: 1.5),
+                        paddingWrapper(Text(detail.overview, textScaleFactor: 1.2))
+                      ]
                   );
                 },
               )
             )
           )
     );
-  }
-
-  List<Widget> _getWidgets(MovieDetail detail) {
-    if (detail.id.length == 0) {
-      return <Widget>[];
-    }
-
-    var wlist = <Widget>[
-      Image.network(detail.getPosterPath()),
-      paddingWrapper(Text(detail.title, textScaleFactor: 2.0)),
-      paddingWrapper(Text(detail.original_title, textScaleFactor: 1.5)),
-      //Text("status:" + detail.status, textScaleFactor: 1.5,),
-      Image.network(detail.getBackdropPath()),
-      Text(detail.vote_count.toString() + "いいね!", textScaleFactor: 1.5),
-      Text("公開日:" + detail.release_date, textScaleFactor: 1.5),
-      paddingWrapper(Text(detail.overview, textScaleFactor: 1.2))
-    ];
-    return wlist;
   }
 
   Widget paddingWrapper(Widget w, {double padding=20}) {
