@@ -108,12 +108,19 @@ class TopPage extends ConsumerWidget {
             ListTile(
               title: const Text('Setup API KEY'),
               onTap: () {
-                showTextInputDialog(context).then((value) {
-                  log("dialog returns=" + value.toString());
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return TextInputDialog("input your api key", "api key");
+                  },
+                ).then((value) {
                   if (value != null) {
+                    log("dialog returns=" + value.toString());
                     setPreference(_pref_api_key_name, value.toString());
                     TheMovieDB.setApiKey(value.toString());
                     updateMovieInfos(context, ref);
+                  } else {
+                    log("dialog canceled");
                   }
                 });
               },
@@ -165,16 +172,6 @@ class TopPage extends ConsumerWidget {
     } else {
       throw new UnimplementedError("ohhh");
     }
-  }
-
-  Future showTextInputDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      //useRootNavigator: true,
-      builder: (BuildContext context) {
-        return TextInputDialog("input your api key", "api key");
-      },
-    );
   }
 }
 
