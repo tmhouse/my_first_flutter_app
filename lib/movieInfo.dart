@@ -142,7 +142,8 @@ class TheMovieDB {
   // https://developers.themoviedb.org/3/movies/get-popular-movies
   String _getMoviePopularPath(int page) {
     assert(page > 0);
-    String p = "$_server/movie/popular?api_key=$_s_tmdb_api_key&$_lang&page=$page";
+    String p =
+        "$_server/movie/popular?api_key=$_s_tmdb_api_key&$_lang&page=$page";
     return p;
   }
 
@@ -165,12 +166,14 @@ class TheMovieDB {
   /**
    * popularな映画のリストを取得開始する.
    */
-  Future<List<MovieInfo>> startGettingPopularMovieList({int minLength = 50}) async {
+  Future<List<MovieInfo>> startGettingPopularMovieList(
+      {int minLength = 50}) async {
     var infoList = <MovieInfo>[];
-    for( int page = 1 ; infoList.length < minLength; page++) {
+    for (int page = 1; infoList.length < minLength; page++) {
       Uri uri = Uri.parse(_getMoviePopularPath(page));
       final response = await http.get(uri);
-      Map<String, dynamic> full_map = jsonDecode(response.body).cast<String, dynamic>();
+      Map<String, dynamic> full_map =
+          jsonDecode(response.body).cast<String, dynamic>();
 
       if (full_map["success"] == false) {
         String msg = full_map["status_message"];

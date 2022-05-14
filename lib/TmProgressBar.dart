@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -20,12 +19,11 @@ class TmProgressBarImpl {
           return Center(
             child: CircularProgressIndicator(),
           );
-        }
-    );
+        });
   }
 
   void close(BuildContext context) {
-    if( _future != null ) {
+    if (_future != null) {
       Navigator.of(context).pop();
       _future = null;
     }

@@ -65,7 +65,9 @@ class TopPage extends ConsumerWidget {
 
     // 一度クリアする
     ref.read(_movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
-    TheMovieDB().startGettingPopularMovieList(minLength:100).then((List<MovieInfo> newOne) {
+    TheMovieDB()
+        .startGettingPopularMovieList(minLength: 100)
+        .then((List<MovieInfo> newOne) {
       // 取得できた
       ref.read(_movieInfoProvider.state).update((oldOne) => newOne);
       _progressBarImpl.close(context);
@@ -125,27 +127,29 @@ class TopPage extends ConsumerWidget {
       ),
 
       // 本体
-      body: Consumer(builder: (context, ref, _) {
-        // 映画情報のリストをwatchする。
-        // 画面が表示されると、ここは2回呼ばれる。
-        // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
-        final List<MovieInfo> infoList = ref.watch(_movieInfoProvider);
-        return SingleChildScrollView(
-          child: PaginatedDataTable(
-            //header: Text("スクロールするよ"),
-            //rowsPerPage: ,
-            dataRowHeight: 120,
-            source: MyMovieData(infoList),
-            columns: const [
-              DataColumn(label: Text("一覧")),
-            ],
-            columnSpacing: 10,
-            horizontalMargin: 10,
-            //rowsPerPage: 8,
-            showCheckboxColumn: false,
-          ),
-        );
-      },),
+      body: Consumer(
+        builder: (context, ref, _) {
+          // 映画情報のリストをwatchする。
+          // 画面が表示されると、ここは2回呼ばれる。
+          // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
+          final List<MovieInfo> infoList = ref.watch(_movieInfoProvider);
+          return SingleChildScrollView(
+            child: PaginatedDataTable(
+              //header: Text("スクロールするよ"),
+              //rowsPerPage: ,
+              dataRowHeight: 120,
+              source: MyMovieData(infoList),
+              columns: const [
+                DataColumn(label: Text("一覧")),
+              ],
+              columnSpacing: 10,
+              horizontalMargin: 10,
+              //rowsPerPage: 8,
+              showCheckboxColumn: false,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -180,10 +184,13 @@ class MyMovieData extends DataTableSource {
 
   @override
   bool get isRowCountApproximate => false;
+
   @override
   int get rowCount => _list.length;
+
   @override
   int get selectedRowCount => 0;
+
   @override
   DataRow getRow(int index) {
     MovieInfo mi = _list[index];
@@ -196,25 +203,23 @@ class MyMovieData extends DataTableSource {
     return Padding(
         padding: new EdgeInsets.all(10.0),
         child: Builder(
-          builder:(context) =>
-            ListTile(
-              leading: Image.network(mi.getPosterPath()),
-              title: Text(
-                mi.title + "\n" + mi.original_title,
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.lightBlueAccent,
-                    fontStyle: FontStyle.italic),
-                ),
-              subtitle: Text(mi.overview, maxLines: 3),
-              isThreeLine: true,
-            onTap: () {
-              log("onTap:");
-              Navigator.push(
-                    context, MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
-            },
-        )
-    ));
+            builder: (context) => ListTile(
+                  leading: Image.network(mi.getPosterPath()),
+                  title: Text(
+                    mi.title + "\n" + mi.original_title,
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.lightBlueAccent,
+                        fontStyle: FontStyle.italic),
+                  ),
+                  subtitle: Text(mi.overview, maxLines: 3),
+                  isThreeLine: true,
+                  onTap: () {
+                    log("onTap:");
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (c) => DetailPage(mi.id)));
+                  },
+                )));
   }
 }
 
@@ -243,33 +248,34 @@ class DetailPage extends ConsumerWidget {
         appBar: AppBar(
             title: Text(AppLocalizations.of(context)!.detail_page_title)),
         body: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
-            child: Center(
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final MovieDetail detail = ref.watch(_movieDetailProvider);
-                  log("consumer.builder detail is " + detail.title);
-                  return Column(
-                    children: detail.id.length == 0 ? <Widget>[] :
-                      <Widget>[
-                        Image.network(detail.getPosterPath()),
-                        paddingWrapper(Text(detail.title, textScaleFactor: 2.0)),
-                        paddingWrapper(Text(detail.original_title, textScaleFactor: 1.5)),
-                        //Text("status:" + detail.status, textScaleFactor: 1.5,),
-                        Image.network(detail.getBackdropPath()),
-                        Text(detail.vote_count.toString() + "いいね!", textScaleFactor: 1.5),
-                        Text("公開日:" + detail.release_date, textScaleFactor: 1.5),
-                        paddingWrapper(Text(detail.overview, textScaleFactor: 1.2))
-                      ]
-                  );
-                },
-              )
-            )
-          )
-    );
+            padding: EdgeInsets.all(20),
+            child: Center(child: Consumer(
+              builder: (context, ref, _) {
+                final MovieDetail detail = ref.watch(_movieDetailProvider);
+                log("consumer.builder detail is " + detail.title);
+                return Column(
+                    children: detail.id.length == 0
+                        ? <Widget>[]
+                        : <Widget>[
+                            Image.network(detail.getPosterPath()),
+                            paddingWrapper(
+                                Text(detail.title, textScaleFactor: 2.0)),
+                            paddingWrapper(Text(detail.original_title,
+                                textScaleFactor: 1.5)),
+                            //Text("status:" + detail.status, textScaleFactor: 1.5,),
+                            Image.network(detail.getBackdropPath()),
+                            Text(detail.vote_count.toString() + "いいね!",
+                                textScaleFactor: 1.5),
+                            Text("公開日:" + detail.release_date,
+                                textScaleFactor: 1.5),
+                            paddingWrapper(
+                                Text(detail.overview, textScaleFactor: 1.2))
+                          ]);
+              },
+            ))));
   }
 
-  Widget paddingWrapper(Widget w, {double padding=20}) {
+  Widget paddingWrapper(Widget w, {double padding = 20}) {
     return Padding(
       padding: EdgeInsets.all(padding),
       child: w,
