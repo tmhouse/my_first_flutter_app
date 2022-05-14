@@ -57,11 +57,16 @@ class MovieInfo extends MovieDataHolder {
   List<num>? genre_ids; // [28, 12, 878],
   @JsonKey(fromJson: MovieDataHolder.convertToString)
   String id = ""; // 634649,
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String original_language = ""; // en,
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String original_title = ""; // Spider-Man: No Way Home,
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String overview = ""; //  倒した敵の暴露により、...
   num popularity = 0; // 6120.418,
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String release_date = ""; // 2021-12-15,
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
   String title = ""; // スパイダーマン：ノー・ウェイ・ホーム,
   bool video = false; // false,
   num vote_average = 0; // 8.2,
@@ -86,21 +91,29 @@ class MovieDetail extends MovieDataHolder {
   List<Map<String, dynamic>>? genres;
   String homepage = "";
   @JsonKey(fromJson: MovieDataHolder.convertToString)
-  dynamic id = "";
-  dynamic imdb_id = "";
-  dynamic original_language = "";
-  dynamic original_title = "";
-  dynamic overview = "";
+  String id = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String imdb_id = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String original_language = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String original_title = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String overview = "";
   num popularity = 0;
   List<Map<String, dynamic>>? production_companies;
   List<Map<String, dynamic>>? production_countries;
-  dynamic release_date = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String release_date = "";
   num revenue = 0;
   num runtime = 0;
   List<Map<String, dynamic>>? spoken_languages;
-  dynamic status = "";
-  dynamic tagline = "";
-  dynamic title = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String status = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String tagline = "";
+  @JsonKey(fromJson: MovieDataHolder.convertToString)
+  String title = "";
   bool video = false;
   num vote_average = 0;
   num vote_count = 0;

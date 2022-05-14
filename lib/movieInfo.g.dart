@@ -13,12 +13,13 @@ MovieInfo _$MovieInfoFromJson(Map<String, dynamic> json) => MovieInfo()
   ..genre_ids =
       (json['genre_ids'] as List<dynamic>?)?.map((e) => e as num).toList()
   ..id = MovieDataHolder.convertToString(json['id'])
-  ..original_language = json['original_language'] as String
-  ..original_title = json['original_title'] as String
-  ..overview = json['overview'] as String
+  ..original_language =
+      MovieDataHolder.convertToString(json['original_language'])
+  ..original_title = MovieDataHolder.convertToString(json['original_title'])
+  ..overview = MovieDataHolder.convertToString(json['overview'])
   ..popularity = json['popularity'] as num
-  ..release_date = json['release_date'] as String
-  ..title = json['title'] as String
+  ..release_date = MovieDataHolder.convertToString(json['release_date'])
+  ..title = MovieDataHolder.convertToString(json['title'])
   ..video = json['video'] as bool
   ..vote_average = json['vote_average'] as num
   ..vote_count = json['vote_count'] as num;
@@ -52,10 +53,11 @@ MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
       .toList()
   ..homepage = json['homepage'] as String
   ..id = MovieDataHolder.convertToString(json['id'])
-  ..imdb_id = json['imdb_id']
-  ..original_language = json['original_language']
-  ..original_title = json['original_title']
-  ..overview = json['overview']
+  ..imdb_id = MovieDataHolder.convertToString(json['imdb_id'])
+  ..original_language =
+      MovieDataHolder.convertToString(json['original_language'])
+  ..original_title = MovieDataHolder.convertToString(json['original_title'])
+  ..overview = MovieDataHolder.convertToString(json['overview'])
   ..popularity = json['popularity'] as num
   ..production_companies = (json['production_companies'] as List<dynamic>?)
       ?.map((e) => e as Map<String, dynamic>)
@@ -63,15 +65,15 @@ MovieDetail _$MovieDetailFromJson(Map<String, dynamic> json) => MovieDetail()
   ..production_countries = (json['production_countries'] as List<dynamic>?)
       ?.map((e) => e as Map<String, dynamic>)
       .toList()
-  ..release_date = json['release_date']
+  ..release_date = MovieDataHolder.convertToString(json['release_date'])
   ..revenue = json['revenue'] as num
   ..runtime = json['runtime'] as num
   ..spoken_languages = (json['spoken_languages'] as List<dynamic>?)
       ?.map((e) => e as Map<String, dynamic>)
       .toList()
-  ..status = json['status']
-  ..tagline = json['tagline']
-  ..title = json['title']
+  ..status = MovieDataHolder.convertToString(json['status'])
+  ..tagline = MovieDataHolder.convertToString(json['tagline'])
+  ..title = MovieDataHolder.convertToString(json['title'])
   ..video = json['video'] as bool
   ..vote_average = json['vote_average'] as num
   ..vote_count = json['vote_count'] as num;
