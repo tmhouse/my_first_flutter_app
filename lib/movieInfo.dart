@@ -164,16 +164,16 @@ class TheMovieDB {
   TheMovieDB._internal();
 
   /**
-   * popularな映画のリストを取得開始する.
+   * TMDBの映画のリスト取得API上のpageごとに情報を取得する.
    */
-  Future<List<MovieInfo>> startGettingPopularMovieList(
-      {int minLength = 50}) async {
+  Future<List<MovieInfo>> getPopularMovieInfos(int page) async {
     var infoList = <MovieInfo>[];
-    for (int page = 1; infoList.length < minLength; page++) {
+    try {
       Uri uri = Uri.parse(_getMoviePopularPath(page));
       final response = await http.get(uri);
-      Map<String, dynamic> full_map =
-          jsonDecode(response.body).cast<String, dynamic>();
+      Map<String, dynamic> full_map = jsonDecode(response.body).cast<
+          String,
+          dynamic>();
 
       if (full_map["success"] == false) {
         String msg = full_map["status_message"];
@@ -189,6 +189,8 @@ class TheMovieDB {
         infoList.add(info);
       }
       log("current page = $page, current num = " + infoList.length.toString());
+    } catch(e) {
+      log(e.toString());
     }
     return infoList;
   }
@@ -196,7 +198,7 @@ class TheMovieDB {
   /**
    * ひとつの映画の詳細情報の取得を開始する.
    */
-  Future<MovieDetail> startGettingMovieDetail(String id) async {
+  Future<MovieDetail> getMovieDetail(String id) async {
     Uri uri = Uri.parse(_getMovieDetailPath(id));
     final response = await http.get(uri);
     Map<String, dynamic> full_map =

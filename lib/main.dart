@@ -7,9 +7,33 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:my_first_flutter_app/movieInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ListPage.dart';
 import 'TextInputDialog.dart';
 import 'TmProgressBar.dart';
 
+
+/************************************************************
+ * preferences.
+ ***********************************************************/
+final String _pref_api_key_name = "apikey";
+
+Future<dynamic> getPrefrence(String key) async {
+  final pref = await SharedPreferences.getInstance();
+  return pref.get(key);
+}
+
+void setPreference(String key, dynamic value) async {
+  final pref = await SharedPreferences.getInstance();
+  if (value is int) {
+    pref.setInt(key, value);
+  } else if (value is double) {
+    pref.setDouble(key, value);
+  } else if (value is String) {
+    pref.setString(key, value);
+  } else {
+    throw new UnimplementedError("ohhh");
+  }
+}
 /************************************************************
  * main.
  ***********************************************************/
@@ -37,6 +61,7 @@ class MyApp extends StatelessWidget {
         const Locale('en', ''),
       ],
       home: TopPage(),
+      //home: ListPage(),
     );
   }
 }
@@ -61,17 +86,23 @@ class TopPage extends ConsumerWidget {
 
   // 映画情報の取得を開始し、取得できたら画面更新を行う
   void updateMovieInfos(BuildContext context, WidgetRef ref) {
-    _progressBarImpl.show(context);
+    // クリアする
+    //ref.read(_movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
 
-    // 一度クリアする
-    ref.read(_movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
-    TheMovieDB()
-        .startGettingPopularMovieList(minLength: 100)
-        .then((List<MovieInfo> newOne) {
-      // 取得できた
-      ref.read(_movieInfoProvider.state).update((oldOne) => newOne);
-      _progressBarImpl.close(context);
-    });
+    int totalPages = 10;
+    _progressBarImpl.show(context);
+    for( int i = 1; i <= totalPages; i++ ) {
+      TheMovieDB().getPopularMovieInfos(i).then((List<MovieInfo> newOne) {
+        // 取得できた
+        ref.read(_movieInfoProvider.state).update((oldOne) {
+          newOne.addAll(oldOne);
+          if( i >= totalPages ) {
+            _progressBarImpl.close(context);
+          }
+          return newOne;
+        });
+      });
+    }
   }
 
   @override
@@ -153,25 +184,6 @@ class TopPage extends ConsumerWidget {
     );
   }
 
-  final String _pref_api_key_name = "apikey";
-
-  Future<dynamic> getPrefrence(String key) async {
-    final pref = await SharedPreferences.getInstance();
-    return pref.get(key);
-  }
-
-  void setPreference(String key, dynamic value) async {
-    final pref = await SharedPreferences.getInstance();
-    if (value is int) {
-      pref.setInt(key, value);
-    } else if (value is double) {
-      pref.setDouble(key, value);
-    } else if (value is String) {
-      pref.setString(key, value);
-    } else {
-      throw new UnimplementedError("ohhh");
-    }
-  }
 }
 
 /**
@@ -238,7 +250,7 @@ class DetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TheMovieDB().startGettingMovieDetail(_id).then((detail) {
+    TheMovieDB().getMovieDetail(_id).then((detail) {
       log("then detail result:" + detail.title);
       log("backdrop path=" + detail.getBackdropPath());
       ref.read(_movieDetailProvider.state).update((oldOne) => detail);
