@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:my_first_flutter_app/MyPreferences.dart';
 import 'package:my_first_flutter_app/movieInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,29 +12,6 @@ import 'ListPage.dart';
 import 'TextInputDialog.dart';
 import 'TmProgressBar.dart';
 
-
-/************************************************************
- * preferences.
- ***********************************************************/
-final String _pref_api_key_name = "apikey";
-
-Future<dynamic> getPrefrence(String key) async {
-  final pref = await SharedPreferences.getInstance();
-  return pref.get(key);
-}
-
-void setPreference(String key, dynamic value) async {
-  final pref = await SharedPreferences.getInstance();
-  if (value is int) {
-    pref.setInt(key, value);
-  } else if (value is double) {
-    pref.setDouble(key, value);
-  } else if (value is String) {
-    pref.setString(key, value);
-  } else {
-    throw new UnimplementedError("ohhh");
-  }
-}
 /************************************************************
  * main.
  ***********************************************************/
@@ -108,7 +86,7 @@ class TopPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // preferenceからapi_keyを取得する
-    getPrefrence(_pref_api_key_name).then((value) {
+    MyPreferences.getApiKey().then((value) {
       log("apiKey=" + value.toString());
       if (value != null) {
         TheMovieDB.setApiKey(value.toString());
@@ -144,7 +122,7 @@ class TopPage extends ConsumerWidget {
                 ).then((value) {
                   if (value != null) {
                     log("dialog returns=" + value.toString());
-                    setPreference(_pref_api_key_name, value.toString());
+                    MyPreferences.setApiKey(value.toString());
                     TheMovieDB.setApiKey(value.toString());
                     updateMovieInfos(context, ref);
                   } else {
@@ -164,6 +142,7 @@ class TopPage extends ConsumerWidget {
           // 画面が表示されると、ここは2回呼ばれる。
           // 1回目は空のリストを表示、2回目は取得したデータを用いて表示する。
           final List<MovieInfo> infoList = ref.watch(_movieInfoProvider);
+          log("Consumer.builder called. list num=" + infoList.length.toString());
           return SingleChildScrollView(
             child: PaginatedDataTable(
               //header: Text("スクロールするよ"),
