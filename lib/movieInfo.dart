@@ -169,6 +169,11 @@ class TheMovieDB {
   Future<List<MovieInfo>> getPopularMovieInfos(int page) async {
     var infoList = <MovieInfo>[];
     try {
+      log("getPopularMovieInfos: request page = $page");
+      if( _s_tmdb_api_key.isEmpty ) {
+        log("getPopuparMovieInfos: WARN no api key.");
+        return infoList;
+      }
       Uri uri = Uri.parse(_getMoviePopularPath(page));
       final response = await http.get(uri);
       Map<String, dynamic> full_map = jsonDecode(response.body).cast<
@@ -177,7 +182,7 @@ class TheMovieDB {
 
       if (full_map["success"] == false) {
         String msg = full_map["status_message"];
-        log("can not get movie list. " + msg);
+        log("getPopularMovieInfos: can not get movie list. " + msg);
         Fluttertoast.showToast(msg: msg, timeInSecForIosWeb: 5);
         return infoList;
       }
@@ -188,7 +193,7 @@ class TheMovieDB {
         //log("info=" + info.title);
         infoList.add(info);
       }
-      log("current page = $page, current num = " + infoList.length.toString());
+      log("getPopularMovieInfos: current page = $page, current num = " + infoList.length.toString());
     } catch(e) {
       log(e.toString());
     }
