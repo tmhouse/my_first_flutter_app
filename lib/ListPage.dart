@@ -32,6 +32,10 @@ class ListPage extends ConsumerWidget {
 
   // 映画情報の取得を開始し、取得できたら画面更新を行う
   void updateMovieInfos(BuildContext context, WidgetRef ref) {
+    if( !TheMovieDB.hasApiKey() ) {
+      log("no api key yet.");
+      return;
+    }
     if( _processingCount == 0 ) {
       //_progressBarImpl.show(context);
     }
@@ -40,15 +44,15 @@ class ListPage extends ConsumerWidget {
     //ref.read(_movieInfoProvider.state).update((oldOne) => <MovieInfo>[]);
 
     if( _processingCount > 3 ) {
-      log("updateMovieInfo: now processing: " + _processingCount.toString());
+      log("updateMovieInfo: processing overflow: " + _processingCount.toString());
       return;
     } else {
       _processingCount++;
     }
 
     TheMovieDB().getPopularMovieInfos(++_curPage).then((List<MovieInfo> newOne) {
+      final int cur = _curPage;
       ref.read(_movieInfoProvider.state).update((List<MovieInfo> oldOne) {
-        log("newOne come. page=$_curPage, page size=" + newOne.length.toString());
         List<MovieInfo> ret = <MovieInfo>[];
         ret.addAll(oldOne);
         ret.addAll(newOne);
@@ -56,6 +60,7 @@ class ListPage extends ConsumerWidget {
         if( _processingCount == 0 ) {
           //_progressBarImpl.close(context);
         }
+        log("newOne come. page=$cur, total element length=" + ret.length.toString());
         return ret;
       });
     });

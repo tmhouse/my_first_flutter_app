@@ -138,6 +138,9 @@ class TheMovieDB {
   static void setApiKey(String apikey) {
     _s_tmdb_api_key = apikey;
   }
+  static bool hasApiKey() {
+    return _s_tmdb_api_key.isNotEmpty;
+  }
 
   // https://developers.themoviedb.org/3/movies/get-popular-movies
   String _getMoviePopularPath(int page) {
